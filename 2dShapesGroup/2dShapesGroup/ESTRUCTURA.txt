@@ -1,0 +1,153 @@
+# ESTRUCTURA DE DIRECTORIOS - 2D Shapes Group
+
+```
+2dShapesGroup/
+│
+├── 📁 Interfaces/
+│   ├── IShape.cs                          [Contrato base para todas las figuras]
+│   └── IShapeGroups.cs                    [Interfaces por grupo con comentarios matemáticos]
+│
+├── 📁 Graphics/
+│   └── ShapeGraphicsHelper.cs            [Fábrica de pinceles, plumas y utilidades gráficas]
+│
+├── 📁 Models/
+│   ├── BasicPolygons.cs                  [Square, Rectangle, Triangle, Parallelogram, Trapeze]
+│   ├── CurvedShapes.cs                   [Circle, Ellipse, Semicircle, Crescent]
+│   ├── IrregularShapes.cs                [Star, Scalene, Kite, Cross]
+│   ├── SpecialShapes.cs                  [Pentagon, Hexagon, Octagon, Rhombus, PieSector, Trefoil, Heart]
+│   └── ShapeRegistry.cs                  [Registro singleton - gestión centralizada de figuras]
+│
+├── 📁 Forms/
+│   ├── FrmHome.cs                        [Formulario principal con menú jerárquico]
+│   ├── FrmHome.Designer.cs               [Diseño del menú]
+│   ├── FrmAllShapes.cs                   [Formulario universal para todas las figuras]
+│   └── FrmAllShapes.Designer.cs          [Layout: Inputs | Canvas | Outputs]
+│
+├── 📄 Program.cs                         [Entry point - inicia FrmHome]
+├── 📄 README.md                          [Documentación completa]
+└── 📄 2dShapesGroup.csproj              [Configuración del proyecto .NET 10]
+
+
+═══════════════════════════════════════════════════════════════════════════════
+DIAGRAMA DE RELACIONES
+═══════════════════════════════════════════════════════════════════════════════
+
+                    ┌──────────────────────────┐
+                    │      FrmHome             │
+                    │   (Formulario Principal) │
+                    └────────────┬─────────────┘
+                                 │
+                    ┌────────────▼─────────────┐
+                    │    ShapeRegistry         │
+                    │   (Registro Singleton)   │
+                    └────────────┬─────────────┘
+                                 │
+          ┌──────────────────────┼──────────────────────┐
+          │                      │                      │
+    ┌─────▼──────┐      ┌────────▼────────┐    ┌───────▼──────┐
+    │ Interfaces │      │ Models          │    │ FrmAllShapes │
+    │            │      │ (Figuras)       │    │ (Universal)  │
+    │ IShape     │◄─────┼ Square          │◄───┤              │
+    │ IBasicPoly │      │ Circle          │    │ IShape       │
+    │ ICurvedSh  │      │ Star            │    │ params...    │
+    │ IIrregular │      │ Pentagon        │    │ Calculate    │
+    │ ISpecialSh │      │ ... (20 total)  │    │ Draw         │
+    └────────────┘      └─────┬──────────┘    └──────┬───────┘
+                                │                     │
+                         ShapeGraphicsHelper          │
+                         (Utilidades Gráficas)       │
+                                │◄────────────────────┘
+                         [CreatePen, CreateBrush,
+                          ApplyHighQuality, etc.]
+
+
+═══════════════════════════════════════════════════════════════════════════════
+JERARQUÍA DE HERENCIA
+═══════════════════════════════════════════════════════════════════════════════
+
+IShape (Interface)
+│
+├── IBasicPolygon (Interface)
+│   ├── Square
+│   ├── Rectangle
+│   ├── Triangle
+│   ├── Parallelogram
+│   └── Trapeze
+│
+├── ICurvedShape (Interface)
+│   ├── Circle
+│   ├── Ellipse
+│   ├── Semicircle
+│   └── Crescent
+│
+├── IIrregularShape (Interface)
+│   ├── Star
+│   ├── Scalene
+│   ├── Kite
+│   └── Cross
+│
+└── ISpecialShape (Interface)
+    ├── Pentagon
+    ├── Hexagon
+    ├── Octagon
+    ├── Rhombus
+    ├── PieSector
+    ├── Trefoil
+    └── Heart
+
+
+═══════════════════════════════════════════════════════════════════════════════
+FLUJO DE EJECUCIÓN
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Program.cs → FrmHome.ShowDialog()
+   │
+2. FrmHome: Usuario selecciona figura del MenuStrip
+   │
+3. FrmHome → FrmAllShapes.LoadShape("NombreFigura")
+   │
+4. FrmAllShapes: 
+   ├─ ShapeRegistry.GetShape() → obtiene instancia
+   ├─ _currentShape.GetInputLabels() → inicializa TextBox dinámicos
+   ├─ RedrawCanvas() → dibuja figura inicial
+   │
+5. Usuario ingresa parámetros y clic "Calcular":
+   ├─ Obtener valores de TextBox
+   ├─ _currentShape.SetParameters(valores)
+   ├─ perimeter = _currentShape.CalculatePerimeter()
+   ├─ area = _currentShape.CalculateArea()
+   ├─ _currentShape.Draw(Graphics, bounds, brush, pen)
+   ├─ Mostrar resultados
+   │
+6. Opciones adicionales:
+   ├─ "Limpiar" → Reset
+   ├─ "Color Relleno" → ColorDialog → Redibujar
+   ├─ "Color Contorno" → ColorDialog → Redibujar
+   └─ "Salir" → Close
+
+═══════════════════════════════════════════════════════════════════════════════
+PRINCIPIOS SOLID IMPLEMENTADOS
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ S (Single Responsibility): Cada clase = 1 responsabilidad
+✓ O (Open/Closed): Extensible sin modificar código existente
+✓ L (Liskov Substitution): Cualquier IShape funciona en FrmAllShapes
+✓ I (Interface Segregation): Interfaces específicas por grupo
+✓ D (Dependency Inversion): Dependen de IShape, no de clases concretas
+
+═══════════════════════════════════════════════════════════════════════════════
+CARACTERÍSTICAS CLAVE
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ 20 figuras geométricas diferentes
+✓ 4 grupos organizados
+✓ Interfaz universal (FrmAllShapes)
+✓ Inputs dinámicos (generados según figura)
+✓ Canvas con dibujo de alta calidad
+✓ Selección de colores
+✓ Cálculo automático de perímetro y área
+✓ Sistema de registro extensible
+✓ Fórmulas matemáticas avanzadas (Herón, Ramanujan, etc.)
+✓ Soporte para aproximaciones numéricas
+
+═══════════════════════════════════════════════════════════════════════════════

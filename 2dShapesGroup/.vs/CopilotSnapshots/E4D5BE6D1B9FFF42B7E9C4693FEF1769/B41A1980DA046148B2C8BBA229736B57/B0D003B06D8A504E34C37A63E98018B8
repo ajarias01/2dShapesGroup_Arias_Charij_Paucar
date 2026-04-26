@@ -1,0 +1,155 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using _2dShapesGroup.Interfaces;
+
+namespace _2dShapesGroup.Models
+{
+    /// <summary>
+    /// Estrella: Polígono de n puntas con radio exterior e interior.
+    /// Perímetro = suma de lados de puntas
+    /// Área = suma de triángulos formados por puntas
+    /// </summary>
+    public class Star : IIrregularShape
+    {
+        public string Name => "Estrella";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Puntas", "Radio Exterior", "Radio Interior" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public void Draw(Graphics g, Rectangle bounds, Brush fillBrush, Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+
+    /// <summary>
+    /// Triángulo Escaleno: Triángulo con tres lados de diferente longitud.
+    /// Perímetro = a + b + c
+    /// Área = √(s(s-a)(s-b)(s-c)) [Fórmula de Herón]
+    /// </summary>
+    public class Scalene : IIrregularShape
+    {
+        public string Name => "Triángulo Escaleno";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Lado A", "Lado B", "Lado C" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar - Fórmula de Herón
+            return 0;
+        }
+
+        public void Draw(Graphics g, Rectangle bounds, Brush fillBrush, Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+
+    /// <summary>
+    /// Cometa: Cuadrilátero con dos pares de lados adyacentes iguales.
+    /// Perímetro = 2(a + b)
+    /// Área = (d1 * d2) / 2 [d1, d2 = diagonales]
+    /// </summary>
+    public class Kite : IIrregularShape
+    {
+        public string Name => "Cometa";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Lado 1", "Lado 2", "Diagonal 1", "Diagonal 2" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public void Draw(Graphics g, Rectangle bounds, Brush fillBrush, Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+
+    /// <summary>
+    /// Cruz: Forma de cruz con brazo horizontal y vertical.
+    /// Perímetro = suma de lados exteriores
+    /// Área = suma de áreas de los rectángulos componentes
+    /// </summary>
+    public class Cross : IIrregularShape
+    {
+        public string Name => "Cruz";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Largo", "Ancho", "Grosor Brazo" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public void Draw(Graphics g, Rectangle bounds, Brush fillBrush, Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+}
