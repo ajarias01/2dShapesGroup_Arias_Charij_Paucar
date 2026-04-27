@@ -1,0 +1,38 @@
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace _2dShapesGroup.Interfaces
+{
+    /// <summary>
+    /// Contrato base para todas las figuras geométricas.
+    /// Define la interfaz que cualquier forma debe implementar.
+    /// </summary>
+    public interface IShape
+    {
+        /// <summary>
+        /// Nombre de la figura para mostrar en la interfaz.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Obtiene las etiquetas de entrada requeridas para la figura y sus valores por defecto.
+        /// </summary>
+        IReadOnlyList<(string Label, double DefaultValue)> Parameters { get; }
+
+        /// <summary>
+        /// Calcula el perímetro de la figura con los valores de entrada.
+        /// </summary>
+        double Perimeter(double[] v);
+
+        /// <summary>
+        /// Calcula el área de la figura con los valores de entrada.
+        /// </summary>
+        double Area(double[] v);
+
+        /// <summary>
+        /// Dibuja la figura en el contexto gráfico proporcionado usando los valores.
+        /// </summary>
+        void Draw(System.Drawing.Graphics g, RectangleF bounds, double[] v);
+    }
+}

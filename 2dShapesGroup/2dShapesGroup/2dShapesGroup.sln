@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11716.218 insiders
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2dShapesGroup", "2dShapesGroup.csproj", "{A7931D5E-3FC7-5037-0346-11E7D1C838B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7931D5E-3FC7-5037-0346-11E7D1C838B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7931D5E-3FC7-5037-0346-11E7D1C838B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7931D5E-3FC7-5037-0346-11E7D1C838B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7931D5E-3FC7-5037-0346-11E7D1C838B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {59DCDC45-B5D9-42DB-B255-F83932886C63}
+	EndGlobalSection
+EndGlobal

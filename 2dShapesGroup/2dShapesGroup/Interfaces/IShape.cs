@@ -1,51 +1,39 @@
 using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 
 namespace _2dShapesGroup.Interfaces
 {
     /// <summary>
-    /// Contrato base para todas las figuras geométricas.
-    /// Define la interfaz que cualquier forma debe implementar.
+    /// Contract that every 2-D shape must fulfill.
+    /// Single Responsibility: defines the minimum surface for a drawable, measurable shape.
+    /// Open/Closed: new shapes extend this interface without modifying existing code.
     /// </summary>
     public interface IShape
     {
-        /// <summary>
-        /// Nombre de la figura para mostrar en la interfaz.
-        /// </summary>
+        // ── Identity ─────────────────────────────────────────────────────
+        /// <summary>Human-readable name shown in the UI.</summary>
         string Name { get; }
 
+        // ── Parameters ───────────────────────────────────────────────────
         /// <summary>
-        /// Obtiene las etiquetas de entrada requeridas para la figura.
+        /// Ordered list of input descriptors (label + default value).
+        /// The form builds its text-boxes dynamically from this list.
+        /// Example: [("Width (a)", 80), ("Height (b)", 50)]
         /// </summary>
-        /// <returns>Lista de etiquetas (ej: "Largo", "Ancho")</returns>
-        List<string> GetInputLabels();
+        IReadOnlyList<(string Label, double DefaultValue)> Parameters { get; }
 
-        /// <summary>
-        /// Establece los parámetros de la figura.
-        /// </summary>
-        /// <param name="parameters">Valores ingresados por el usuario</param>
-        void SetParameters(double[] parameters);
+        // ── Math ─────────────────────────────────────────────────────────
+        /// <summary>Calculates the perimeter given the current parameter values.</summary>
+        double Perimeter(double[] values);
 
-        /// <summary>
-        /// Calcula el perímetro de la figura.
-        /// </summary>
-        /// <returns>Valor del perímetro</returns>
-        double CalculatePerimeter();
+        /// <summary>Calculates the area given the current parameter values.</summary>
+        double Area(double[] values);
 
+        // ── Drawing ──────────────────────────────────────────────────────
         /// <summary>
-        /// Calcula el área de la figura.
+        /// Draws the shape inside <paramref name="bounds"/> using the supplied graphics context.
+        /// Implementations must scale the figure to fit the available rectangle.
         /// </summary>
-        /// <returns>Valor del área</returns>
-        double CalculateArea();
-
-        /// <summary>
-        /// Dibuja la figura en el contexto gráfico proporcionado.
-        /// </summary>
-        /// <param name="g">Contexto gráfico</param>
-        /// <param name="bounds">Área disponible para dibujar</param>
-        /// <param name="fillBrush">Pincel para rellenar</param>
-        /// <param name="pen">Pluma para el contorno</param>
-        void Draw(System.Drawing.Graphics g, System.Drawing.Rectangle bounds, System.Drawing.Brush fillBrush, System.Drawing.Pen pen);
+        void Draw(System.Drawing.Graphics g, RectangleF bounds, double[] values);
     }
 }

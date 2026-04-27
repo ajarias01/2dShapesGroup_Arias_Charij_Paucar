@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("2dShapesGroup")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3cf080f496efe86fa48fe0b5e475b4ab0f41d06a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+44ec82d5caab660d58b0d819cbb4009c7cffe8c1")]
 [assembly: System.Reflection.AssemblyProductAttribute("2dShapesGroup")]
 [assembly: System.Reflection.AssemblyTitleAttribute("2dShapesGroup")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

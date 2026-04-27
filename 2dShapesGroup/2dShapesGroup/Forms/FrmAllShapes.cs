@@ -4,134 +4,175 @@ using System.Drawing;
 using System.Windows.Forms;
 using _2dShapesGroup.Interfaces;
 using _2dShapesGroup.Models;
-using _2dShapesGroup.Graphics;
-using Graphics = System.Drawing.Graphics;
-using Rectangle = System.Drawing.Rectangle;
-using Brush = System.Drawing.Brush;
-using Pen = System.Drawing.Pen;
+using ShapesApp.Models;
 
-namespace _2dShapesGroup.Forms
+namespace ShapesApp.Forms
 {
-    /// <summary>
-    /// Formulario universal para todas las figuras.
-    /// Panel Inputs (dinámico) | Panel Graphic (canvas) | Panel Outputs (Perimeter/Area)
-    /// Botones: Calculate, Reset, Exit
-    /// Selector de color de relleno
-    /// </summary>
+    // ════════════════════════════════════════════════════════════════════
+    //  FrmAllShapes
+    //  A single reusable form that can display any of the 20 shapes.
+    //  Single Responsibility : only orchestrates input ↔ math ↔ drawing.
+    //  Open/Closed           : adding a new shape never requires modifying this form.
+    // ════════════════════════════════════════════════════════════════════
+
     public partial class FrmAllShapes : Form
     {
-        private IShape _currentShape;
-        private List<TextBox> _inputControls = new();
-        private Color _fillColor = Color.LightBlue;
-        private Color _outlineColor = Color.Black;
+        // ── State ─────────────────────────────────────────────────────────
+        private IShape?           _currentShape;
+        private List<TextBox>     _inputBoxes = new();
+        private double[]          _currentValues = Array.Empty<double>();
 
+        // ── Constructor ───────────────────────────────────────────────────
         public FrmAllShapes()
         {
             InitializeComponent();
+
+            // Populate the shape selector
+            PopulateShapeSelector();
+
+            // Wire up paint event for the graphic panel
+            picGraphic.Paint += PicGraphic_Paint;
+
+            // Default: first shape in the registry
+            if (cmbShape.Items.Count > 0)
+                cmbShape.SelectedIndex = 0;
         }
 
-        public FrmAllShapes(string shapeName) : this()
+        // ── Public API: pre-select a shape (called from FrmHome) ──────────
+        public void SelectShape(IShape shape)
         {
-            LoadShape(shapeName);
-        }
-
-        /// <summary>
-        /// Carga una figura específica por nombre.
-        /// </summary>
-        public void LoadShape(string shapeName)
-        {
-            try
+            for (int i = 0; i < cmbShape.Items.Count; i++)
             {
-                _currentShape = ShapeRegistry.GetShape(shapeName);
-                this.Text = $"2D Shapes - {_currentShape.Name}";
-                InitializeInputs();
-                RedrawCanvas();
+                if (cmbShape.Items[i] is ShapeEntry entry && entry.Shape.Name == shape.Name)
+                {
+                    cmbShape.SelectedIndex = i;
+                    return;
+                }
             }
-            catch (Exception ex)
+        }
+
+        // ── Populate combo with all shapes (grouped) ──────────────────────
+        private void PopulateShapeSelector()
+        {
+            cmbShape.Items.Clear();
+            var registry = ShapeRegistry.GetAll();
+            foreach (var kvp in registry)
+                foreach (var shape in kvp.Value)
+                    cmbShape.Items.Add(new ShapeEntry(kvp.Key, shape));
+        }
+
+        // ── Combo selection changed → rebuild input panel ─────────────────
+        private void CmbShape_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbShape.SelectedItem is not ShapeEntry entry) return;
+
+            _currentShape = entry.Shape;
+            lblShapeName.Text  = _currentShape.Name;
+            lblGroupName.Text  = $"Group: {entry.GroupName}";
+
+            RebuildInputPanel(_currentShape);
+            Calculate();
+        }
+
+        // ── Build text-boxes dynamically from IShape.Parameters ──────────
+        private void RebuildInputPanel(IShape shape)
+        {
+            // Clear old controls
+            pnlInputs.Controls.Clear();
+            _inputBoxes.Clear();
+
+            int y = 8;
+            foreach (var (label, defaultVal) in shape.Parameters)
             {
-                MessageBox.Show($"Error al cargar la figura: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var lbl = new Label
+                {
+                    Text     = label + ":",
+                    Location = new Point(8, y + 3),
+                    AutoSize = true,
+                    Font     = new Font("Segoe UI", 9f)
+                };
+
+                var txt = new TextBox
+                {
+                    Text     = defaultVal.ToString("0.##"),
+                    Location = new Point(160, y),
+                    Width    = 80,
+                    Font     = new Font("Segoe UI", 9f)
+                };
+                txt.TextChanged += (s, e) => Calculate();
+
+                pnlInputs.Controls.Add(lbl);
+                pnlInputs.Controls.Add(txt);
+                _inputBoxes.Add(txt);
+
+                y += 34;
             }
         }
 
-        /// <summary>
-        /// Inicializa los controles de entrada dinámicamente.
-        /// </summary>
-        private void InitializeInputs()
+        // ── Parse inputs → compute → refresh UI ──────────────────────────
+        private void Calculate()
         {
-            // TODO: Implementar
-            // - Limpiar controles previos
-            // - Obtener labels de _currentShape.GetInputLabels()
-            // - Crear TextBox para cada entrada
-            // - Guardar referencias en _inputControls
+            if (_currentShape is null) return;
+
+            _currentValues = new double[_inputBoxes.Count];
+            for (int i = 0; i < _inputBoxes.Count; i++)
+            {
+                if (!double.TryParse(_inputBoxes[i].Text,
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out double val) || val <= 0)
+                {
+                    // Skip redraw on invalid input
+                    return;
+                }
+                _currentValues[i] = val;
+            }
+
+            double perimeter = _currentShape.Perimeter(_currentValues);
+            double area      = _currentShape.Area(_currentValues);
+
+            lblPerimeterValue.Text = $"{perimeter:F4}";
+            lblAreaValue.Text      = $"{area:F4}";
+
+            picGraphic.Invalidate();   // triggers Paint → Draw
         }
 
-        /// <summary>
-        /// Redibuja el canvas con la figura actual.
-        /// </summary>
-        private void RedrawCanvas()
+        // ── GDI+ paint for the preview panel ─────────────────────────────
+        private void PicGraphic_Paint(object? sender, PaintEventArgs e)
         {
-            // TODO: Implementar
-            // - Obtener area del panel gráfico
-            // - Crear Bitmap y Graphics
-            // - Aplicar calidad alta (ShapeGraphicsHelper.ApplyHighQuality)
-            // - Dibujar figura (_currentShape.Draw)
-            // - Mostrar en PictureBox
+            if (_currentShape is null || _currentValues.Length == 0) return;
+            e.Graphics.Clear(picGraphic.BackColor);
+            _currentShape.Draw(e.Graphics,
+                               new RectangleF(0, 0, picGraphic.Width, picGraphic.Height),
+                               _currentValues);
         }
 
-        /// <summary>
-        /// Botón Calculate: calcula perímetro y área.
-        /// </summary>
-        private void BtnCalculate_Click(object sender, EventArgs e)
-        {
-            // TODO: Implementar
-            // - Obtener valores de _inputControls
-            // - Validar que sean números válidos
-            // - Llamar SetParameters
-            // - Calcular perímetro y área
-            // - Mostrar resultados
-            // - Redibujar canvas
-        }
+        // ── Button handlers ───────────────────────────────────────────────
+        private void BtnCalculate_Click(object sender, EventArgs e) => Calculate();
 
-        /// <summary>
-        /// Botón Reset: limpia los valores.
-        /// </summary>
         private void BtnReset_Click(object sender, EventArgs e)
         {
-            // TODO: Implementar
-            // - Limpiar TextBox de entrada
-            // - Limpiar labels de salida
-            // - Limpiar canvas
+            if (_currentShape is null) return;
+            for (int i = 0; i < _inputBoxes.Count && i < _currentShape.Parameters.Count; i++)
+                _inputBoxes[i].Text = _currentShape.Parameters[i].DefaultValue.ToString("0.##");
+            Calculate();
         }
 
-        /// <summary>
-        /// Botón Exit: cierra el formulario.
-        /// </summary>
-        private void BtnExit_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        private void BtnExit_Click(object sender, EventArgs e) => Close();
 
-        /// <summary>
-        /// Botón para seleccionar color de relleno.
-        /// </summary>
-        private void BtnChooseColor_Click(object sender, EventArgs e)
+        // ── Inner helper class ────────────────────────────────────────────
+        private sealed class ShapeEntry
         {
-            // TODO: Implementar
-            // - Abrir ColorDialog
-            // - Establecer _fillColor
-            // - Redibujar canvas
-        }
+            public string GroupName { get; }
+            public IShape Shape     { get; }
 
-        /// <summary>
-        /// Botón para seleccionar color de contorno.
-        /// </summary>
-        private void BtnChooseOutlineColor_Click(object sender, EventArgs e)
-        {
-            // TODO: Implementar
-            // - Abrir ColorDialog
-            // - Establecer _outlineColor
-            // - Redibujar canvas
+            public ShapeEntry(string groupName, IShape shape)
+            {
+                GroupName = groupName;
+                Shape     = shape;
+            }
+
+            public override string ToString() => Shape.Name;
         }
     }
 }

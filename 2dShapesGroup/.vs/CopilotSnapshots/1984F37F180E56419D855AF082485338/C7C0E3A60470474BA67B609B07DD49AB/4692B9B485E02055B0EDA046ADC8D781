@@ -1,0 +1,188 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using _2dShapesGroup.Interfaces;
+
+namespace _2dShapesGroup.Models
+{
+    /// <summary>
+    /// Cuadrado: Polígono regular de 4 lados iguales.
+    /// Perímetro = 4*lado, Área = lado²
+    /// </summary>
+    public class Square : IBasicPolygon
+    {
+        public string Name => "Cuadrado";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Lado" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public void Draw(System.Drawing.Graphics g, System.Drawing.Rectangle bounds, System.Drawing.Brush fillBrush, System.Drawing.Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+
+    /// <summary>
+    /// Rectángulo: Polígono de 4 lados con ángulos rectos.
+    /// Perímetro = 2(largo + ancho), Área = largo * ancho
+    /// </summary>
+    public class Rectangle : IBasicPolygon
+    {
+        public string Name => "Rectángulo";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Largo", "Ancho" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public void Draw(System.Drawing.Graphics g, System.Drawing.Rectangle bounds, System.Drawing.Brush fillBrush, System.Drawing.Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+
+    /// <summary>
+    /// Triángulo: Polígono de 3 lados.
+    /// Perímetro = a + b + c, Área = √(s(s-a)(s-b)(s-c)) [Fórmula de Herón]
+    /// donde s = (a + b + c) / 2
+    /// </summary>
+    public class Triangle : IBasicPolygon
+    {
+        public string Name => "Triángulo";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Lado A", "Lado B", "Lado C" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar - Usar Fórmula de Herón
+            return 0;
+        }
+
+        public void Draw(System.Drawing.Graphics g, System.Drawing.Rectangle bounds, System.Drawing.Brush fillBrush, System.Drawing.Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+
+    /// <summary>
+    /// Paralelogramo: Cuadrilátero con lados opuestos paralelos.
+    /// Perímetro = 2(a + b), Área = base * altura
+    /// </summary>
+    public class Parallelogram : IBasicPolygon
+    {
+        public string Name => "Paralelogramo";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Base", "Altura", "Lado Oblicuo" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public void Draw(System.Drawing.Graphics g, System.Drawing.Rectangle bounds, System.Drawing.Brush fillBrush, System.Drawing.Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+
+    /// <summary>
+    /// Trapecio: Cuadrilátero con un par de lados paralelos.
+    /// Perímetro = a + b + c + d, Área = (base1 + base2) * altura / 2
+    /// </summary>
+    public class Trapeze : IBasicPolygon
+    {
+        public string Name => "Trapecio";
+
+        public List<string> GetInputLabels()
+        {
+            return new List<string> { "Base 1", "Base 2", "Altura", "Lado 1", "Lado 2" };
+        }
+
+        public void SetParameters(double[] parameters)
+        {
+            // TODO: Implementar
+        }
+
+        public double CalculatePerimeter()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public double CalculateArea()
+        {
+            // TODO: Implementar
+            return 0;
+        }
+
+        public void Draw(System.Drawing.Graphics g, System.Drawing.Rectangle bounds, System.Drawing.Brush fillBrush, System.Drawing.Pen pen)
+        {
+            // TODO: Implementar
+        }
+    }
+}

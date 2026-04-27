@@ -1,0 +1,373 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using _2dShapesGroup.Interfaces;
+using _2dShapesGroup.Graphics;
+using G = System.Drawing.Graphics;
+
+namespace ShapesApp.Models.IrregularShapes
+{
+    // ════════════════════════════════════════════════════════════════════
+    //  GROUP 3 — IRREGULAR / STARS
+    //  Shapes: Star, Scalene (triangle shown as irregular polygon),
+    //          Trefoil, Cross, Kite, Pie (sector)
+    // ════════════════════════════════════════════════════════════════════
+
+    // ────────────────────────────────────────────────────────────────────
+    // STAR  (regular n-pointed star)
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A regular star polygon with n points.
+    /// Parameters: number of points n, outer radius R, inner radius r
+    /// The star is built by alternating vertices on the outer and inner circles.
+    /// Perimeter ≈ 2n × side_length  (approximate; side = chord between adjacent outer/inner pts)
+    /// Area      ≈ (n × R² × sin(2π/n)) / 2 − (n × r² × sin(2π/n)) / 2
+    /// Drawing   : 2n vertices alternating on R and r circles.
+    /// </summary>
+    public class Star : IShape
+    {
+        public string Name => "Estrella";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[]
+            {
+                ("Points (n)", 5.0),
+                ("Outer radius R", 70.0),
+                ("Inner radius r", 30.0)
+            };
+
+        public double Perimeter(double[] v)
+        {
+            int n    = (int)Math.Max(v[0], 3);
+            double R = v[1], r = v[2];
+            double angle = Math.PI / n;   // half the angle between a point and a valley
+            // Side length from outer tip to inner valley (law of cosines on the triangle)
+            double side = Math.Sqrt(R * R + r * r - 2 * R * r * Math.Cos(angle));
+            return 2 * n * side;
+        }
+
+        public double Area(double[] v)
+        {
+            int n    = (int)Math.Max(v[0], 3);
+            double R = v[1], r = v[2];
+            double theta = 2 * Math.PI / n;
+            // Shoelace on the 2n alternating vertices
+            return n / 2.0 * (R * R - r * r) * Math.Sin(theta);
+        }
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphicsHelper.ApplyHighQuality(g);
+            int    n    = (int)Math.Max(v[0], 3);
+            double R    = v[1], r = v[2];
+
+            float sq    = Math.Min(b.Width, b.Height) - 24;
+            float scale = sq / (float)(R * 2);
+            float cx    = b.X + b.Width  / 2f;
+            float cy    = b.Y + b.Height / 2f;
+
+            PointF[] pts = new PointF[2 * n];
+            for (int i = 0; i < 2 * n; i++)
+            {
+                // Outer vertices at even indices, inner at odd
+                double radius = (i % 2 == 0) ? R : r;
+                double angle  = -Math.PI / 2 + Math.PI * i / n;
+                pts[i] = new PointF(cx + (float)(radius * scale * Math.Cos(angle)),
+                                    cy + (float)(radius * scale * Math.Sin(angle)));
+            }
+
+            using var brush = ShapeGraphicsHelper.CreateFillBrush();
+            using var pen   = ShapeGraphicsHelper.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // SCALENE (irregular triangle — reuses Triangle math but displayed
+    //          differently to emphasize the "irregular" group)
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A triangle with all sides of different lengths (scalene).
+    /// Same math as Group 1's Triangle; placed here to match the image layout.
+    /// Parameters: side a, side b, side c
+    /// Perimeter = a + b + c
+    /// Area      = Heron's formula
+    /// Drawing   : coordinates derived via cosine rule, then scaled to fit.
+    /// </summary>
+    public class Scalene : IShape
+    {
+        public string Name => "Triángulo Escaleno";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Side a", 100.0), ("Side b", 70.0), ("Side c", 50.0) };
+
+        public double Perimeter(double[] v) => v[0] + v[1] + v[2];
+
+        public double Area(double[] v)
+        {
+            double s = Perimeter(v) / 2;
+            double a2 = s * (s - v[0]) * (s - v[1]) * (s - v[2]);
+            return a2 > 0 ? Math.Sqrt(a2) : 0;
+        }
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphicsHelper.ApplyHighQuality(g);
+            double a = v[0], bv = v[1], c = v[2];
+            double cosA = (a * a + c * c - bv * bv) / (2 * a * c);
+            cosA = Math.Max(-1, Math.Min(1, cosA));
+            double sinA = Math.Sqrt(1 - cosA * cosA);
+
+            PointF pA = new(0, 0);
+            PointF pB = new((float)a, 0);
+            PointF pC = new((float)(c * cosA), -(float)(c * sinA));
+
+            float minX = Math.Min(pA.X, Math.Min(pB.X, pC.X));
+            float minY = Math.Min(pA.Y, Math.Min(pB.Y, pC.Y));
+            float maxX = Math.Max(pA.X, Math.Max(pB.X, pC.X));
+            float maxY = Math.Max(pA.Y, Math.Max(pB.Y, pC.Y));
+
+            float shapeW = maxX - minX, shapeH = maxY - minY;
+            float padding = 12f;
+            float scaleX = (b.Width  - padding * 2) / Math.Max(shapeW, 1);
+            float scaleY = (b.Height - padding * 2) / Math.Max(shapeH, 1);
+            float scale  = Math.Min(scaleX, scaleY);
+
+            float drawW = shapeW * scale, drawH = shapeH * scale;
+            float offX = b.X + (b.Width  - drawW) / 2f - minX * scale;
+            float offY = b.Y + (b.Height - drawH) / 2f - minY * scale;
+
+            PointF[] pts =
+            {
+                new(pA.X * scale - minX * scale + offX, pA.Y * scale - minY * scale + offY),
+                new(pB.X * scale - minX * scale + offX, pB.Y * scale - minY * scale + offY),
+                new(pC.X * scale - minX * scale + offX, pC.Y * scale - minY * scale + offY)
+            };
+
+            using var brush = ShapeGraphicsHelper.CreateFillBrush();
+            using var pen   = ShapeGraphicsHelper.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // TREFOIL  (three-lobed clover)
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Three circles arranged symmetrically around a central point, overlapping
+    /// to form a three-leaf clover.
+    /// Parameters: lobe radius r
+    /// Area      ≈ 3 × π × r²  (three full circles, overlap ignored for simplicity)
+    /// Perimeter ≈ 3 × 2π × r  (three full arcs)
+    /// Drawing   : three ellipses placed at 120° intervals around center.
+    /// </summary>
+    public class Trefoil : IShape
+    {
+        public string Name => "Trébol";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Lobe radius r", 40.0) };
+
+        public double Perimeter(double[] v) => 3 * 2 * Math.PI * v[0];
+        public double Area(double[] v)      => 3 * Math.PI * v[0] * v[0];
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphicsHelper.ApplyHighQuality(g);
+            float r   = (float)v[0];
+            float sq  = Math.Min(b.Width, b.Height) - 24;
+            // Each lobe circle fits within half the square
+            float scale = sq / (r * 4);
+            float rs  = r * scale;   // scaled lobe radius
+            float cx  = b.X + b.Width  / 2f;
+            float cy  = b.Y + b.Height / 2f;
+
+            using var brush = ShapeGraphicsHelper.CreateFillBrush();
+            using var pen   = ShapeGraphicsHelper.CreateBorderPen();
+
+            // Three lobes at 90°, 210°, 330° (top, bottom-left, bottom-right)
+            double[] angles = { -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI / 3, -Math.PI / 2 + 4 * Math.PI / 3 };
+            foreach (double angle in angles)
+            {
+                float lx = cx + (float)(rs * Math.Cos(angle)) - rs;
+                float ly = cy + (float)(rs * Math.Sin(angle)) - rs;
+                g.FillEllipse(brush, lx, ly, rs * 2, rs * 2);
+                g.DrawEllipse(pen,   lx, ly, rs * 2, rs * 2);
+            }
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // CROSS  (plus-sign / Greek cross)
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A plus-shaped cross with equal arms.
+    /// Parameters: arm length (a), arm width (w)
+    /// The cross is composed of two overlapping rectangles:
+    ///   horizontal: width = a*2+w, height = w
+    ///   vertical  : width = w, height = a*2+w
+    /// Perimeter = 4 × (a + w) × 2 / … simplified to 12 × a + 4 × w   (outer contour)
+    ///           = 4 × (outer_arm_top + outer_arm_side) × 2 — standard cross perimeter
+    ///           Actually: perimeter = 4 × a × 2 + ... the 12-segment polygon perimeter:
+    ///           = 4 × (2a + w) + 4 × w = 8a + 8w   → but typically: 12a if w=a
+    ///           Simple formula: Perimeter = 4 × (3a)  when w = a.
+    ///           General: P = 4 × (a + w) × ... we store 12 outer edges of length a each.
+    ///           Standard result: P = 12a + 4w  — No. Clean version:
+    ///           The 12-sided polygon: 4 edges of length a and 4 of length w, but there are
+    ///           actually 12 edges total: alternating a and (a-w)/2... complicated.
+    ///           We use the simpler approximate: P = 4 × (outer_width + outer_height - inner_corner×8)
+    ///           For an equal-armed cross: P = 12 × arm_length.
+    /// Area      = a × w × 2 + w × w  (two rectangles minus center counted twice)
+    ///           = w × (2a + w)  → full formula = 2 × a × w + w²
+    /// Drawing   : GraphicsPath with 12 vertices forming the cross outline.
+    /// </summary>
+    public class Cross : IShape
+    {
+        public string Name => "Cruz";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Arm length (a)", 50.0), ("Arm width (w)", 30.0) };
+
+        // Perimeter of the 12-sided cross outline
+        public double Perimeter(double[] v) => 4 * (2 * v[0] + v[1]);
+
+        // Area = 2 rectangles (a×w + w×a) + center square (w×w) minus center counted twice
+        // = 2 × (a × w) + w²   but since the vertical arm already contains the center:
+        // Area = horizontal_rect_area + vertical_rect_area - center_square_area
+        //      = (2a+w)×w + (2a+w)×w - w×w  ... wrong because center is shared.
+        // Correct: Area = 2 × (arm_length × arm_width) + arm_width²
+        public double Area(double[] v) => 2 * v[0] * v[1] + v[1] * v[1];
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphicsHelper.ApplyHighQuality(g);
+            float a = (float)v[0], w = (float)v[1];
+            float total = 2 * a + w;   // full extent in both directions
+
+            float padding = 12f;
+            float sq   = Math.Min(b.Width, b.Height) - padding * 2;
+            float scale = sq / total;
+            float a_s  = a * scale;
+            float w_s  = w * scale;
+
+            float cx = b.X + b.Width  / 2f;
+            float cy = b.Y + b.Height / 2f;
+            float half = w_s / 2f;
+            float arm  = a_s;
+
+            // 12 vertices of the cross, starting top-left and going clockwise
+            PointF[] pts =
+            {
+                new(cx - half,        cy - half - arm),   // top-left of top-arm
+                new(cx + half,        cy - half - arm),   // top-right of top-arm
+                new(cx + half,        cy - half),          // inner top-right
+                new(cx + half + arm,  cy - half),          // right-arm top-left
+                new(cx + half + arm,  cy + half),          // right-arm bottom-left
+                new(cx + half,        cy + half),          // inner bottom-right
+                new(cx + half,        cy + half + arm),    // bottom-arm top-right
+                new(cx - half,        cy + half + arm),    // bottom-arm top-left
+                new(cx - half,        cy + half),          // inner bottom-left
+                new(cx - half - arm,  cy + half),          // left-arm bottom-right
+                new(cx - half - arm,  cy - half),          // left-arm top-right
+                new(cx - half,        cy - half),           // inner top-left
+            };
+
+            using var brush = ShapeGraphicsHelper.CreateFillBrush();
+            using var pen   = ShapeGraphicsHelper.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // KITE
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A quadrilateral with two pairs of adjacent sides equal.
+    /// Parameters: top half-width (w), top height (h1), bottom height (h2)
+    /// Perimeter = 2 × √(w²+h1²) + 2 × √(w²+h2²)
+    /// Area      = w × (h1 + h2)  (= d1×d2/2 where d1=2w, d2=h1+h2)
+    /// Drawing   : diamond-like shape with the top portion shorter than the bottom.
+    /// </summary>
+    public class Kite : IShape
+    {
+        public string Name => "Cometa";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Half-width (w)", 50.0), ("Top height (h1)", 40.0), ("Bottom height (h2)", 80.0) };
+
+        public double Perimeter(double[] v)
+        {
+            double w = v[0], h1 = v[1], h2 = v[2];
+            return 2 * Math.Sqrt(w * w + h1 * h1) + 2 * Math.Sqrt(w * w + h2 * h2);
+        }
+        public double Area(double[] v) => v[0] * (v[1] + v[2]);
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphicsHelper.ApplyHighQuality(g);
+            float w = (float)v[0], h1 = (float)v[1], h2 = (float)v[2];
+            float logW = w * 2, logH = h1 + h2;
+            float padding = 12f;
+            float scaleX  = (b.Width  - padding * 2) / Math.Max(logW, 1);
+            float scaleY  = (b.Height - padding * 2) / Math.Max(logH, 1);
+            float scale   = Math.Min(scaleX, scaleY);
+
+            float sw = logW * scale, sh = logH * scale;
+            float ox  = b.X + (b.Width  - sw) / 2f + w * scale;
+            float oy  = b.Y + (b.Height - sh) / 2f;
+
+            PointF[] pts =
+            {
+                new(ox,             oy),                    // top
+                new(ox + w * scale, oy + h1 * scale),       // right (middle)
+                new(ox,             oy + sh),               // bottom
+                new(ox - w * scale, oy + h1 * scale)        // left (middle)
+            };
+
+            using var brush = ShapeGraphicsHelper.CreateFillBrush();
+            using var pen   = ShapeGraphicsHelper.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // PIE  (circular sector)
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A circular sector — a "pie slice" defined by radius and angle.
+    /// Parameters: radius (r), central angle θ (degrees)
+    /// Arc length (perimeter curved part) = r × θ_radians
+    /// Perimeter = 2r + r × θ_radians
+    /// Area      = r² × θ_radians / 2
+    /// Drawing   : GDI+ DrawPie/FillPie, centered in the panel.
+    /// </summary>
+    public class Pie : IShape
+    {
+        public string Name => "Sector Circular";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Radius (r)", 70.0), ("Angle θ (°)", 120.0) };
+
+        public double Perimeter(double[] v)
+        {
+            double rad = v[1] * Math.PI / 180;
+            return 2 * v[0] + v[0] * rad;
+        }
+        public double Area(double[] v)
+        {
+            double rad = v[1] * Math.PI / 180;
+            return v[0] * v[0] * rad / 2;
+        }
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphicsHelper.ApplyHighQuality(g);
+            RectangleF sq = ShapeGraphicsHelper.PaddedSquare(b);
+            using var brush = ShapeGraphicsHelper.CreateFillBrush();
+            using var pen   = ShapeGraphicsHelper.CreateBorderPen();
+            // Start at top (-90°) so the sector opens downward/rightward nicely
+            float sweep = (float)Math.Min(v[1], 359.9);
+            g.FillPie(brush, sq, -90f, sweep);
+            g.DrawPie(pen,   sq, -90f, sweep);
+        }
+    }
+}

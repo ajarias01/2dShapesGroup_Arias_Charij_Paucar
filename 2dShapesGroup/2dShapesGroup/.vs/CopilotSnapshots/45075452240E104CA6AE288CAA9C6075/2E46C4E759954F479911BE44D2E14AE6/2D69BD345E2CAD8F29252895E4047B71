@@ -1,0 +1,381 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using _2dShapesGroup.Interfaces;
+using _2dShapesGroup.Graphics;
+using G = System.Drawing.Graphics;
+
+namespace ShapesApp.Models.BasicPolygons
+{
+    // ════════════════════════════════════════════════════════════════════
+    //  GROUP 1 — BASIC POLYGONS
+    //  Shapes: Square, Rectangle, Triangle, Pentagon, Hexagon,
+    //          Parallelogram, Trapeze, Rhombus
+    // ════════════════════════════════════════════════════════════════════
+
+    // ────────────────────────────────────────────────────────────────────
+    // SQUARE
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A regular quadrilateral with four equal sides.
+    /// Parameters: side (a)
+    /// Perimeter = 4 × a
+    /// Area      = a²
+    /// Drawing   : axis-aligned square centered in the panel.
+    /// </summary>
+    public class Square : IShape
+    {
+        public string Name => "Square";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Side (a)", 80.0) };
+
+        public double Perimeter(double[] v) => 4 * v[0];
+        public double Area(double[] v)      => v[0] * v[0];
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphics.EnableAntiAlias(g);
+            RectangleF r = ShapeGraphics.PaddedSquare(b);
+            using var brush = ShapeGraphics.CreateFillBrush();
+            using var pen   = ShapeGraphics.CreateBorderPen();
+            g.FillRectangle(brush, r);
+            g.DrawRectangle(pen, r.X, r.Y, r.Width, r.Height);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // RECTANGLE
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A quadrilateral with opposite sides equal and all angles 90°.
+    /// Parameters: width (a), height (b)
+    /// Perimeter = 2(a + b)
+    /// Area      = a × b
+    /// Drawing   : rectangle scaled to fit, preserving aspect ratio a:b.
+    /// </summary>
+    public class RectangleShape : IShape
+    {
+        public string Name => "Rectangle";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Width (a)", 100.0), ("Height (b)", 60.0) };
+
+        public double Perimeter(double[] v) => 2 * (v[0] + v[1]);
+        public double Area(double[] v)      => v[0] * v[1];
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphics.EnableAntiAlias(g);
+            double w = Math.Max(v[0], 1), h = Math.Max(v[1], 1);
+            RectangleF r = ShapeGraphics.PaddedRect(b, (float)w, (float)h);
+            using var brush = ShapeGraphics.CreateFillBrush();
+            using var pen   = ShapeGraphics.CreateBorderPen();
+            g.FillRectangle(brush, r);
+            g.DrawRectangle(pen, r.X, r.Y, r.Width, r.Height);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // TRIANGLE  (scalene — given three sides, drawn via Heron + coords)
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A three-sided polygon with arbitrary side lengths.
+    /// Parameters: side a, side b, side c
+    /// Perimeter = a + b + c
+    /// Area      = √[s(s−a)(s−b)(s−c)]  where s = (a+b+c)/2  (Heron's formula)
+    /// Drawing   : vertex A at origin, B along x-axis; C found via cosine rule.
+    ///             The triangle is then scaled and centered in the panel.
+    /// </summary>
+    public class Triangle : IShape
+    {
+        public string Name => "Triangle";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Side a", 80.0), ("Side b", 80.0), ("Side c", 80.0) };
+
+        public double Perimeter(double[] v) => v[0] + v[1] + v[2];
+
+        public double Area(double[] v)
+        {
+            double s = Perimeter(v) / 2;
+            double area2 = s * (s - v[0]) * (s - v[1]) * (s - v[2]);
+            return area2 > 0 ? Math.Sqrt(area2) : 0;
+        }
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphics.EnableAntiAlias(g);
+            double a = v[0], bv = v[1], c = v[2];
+
+            // Place A=(0,0), B=(a,0), then find C via cosine rule
+            // cos(A) = (a²+c²-b²)/(2ac)  → but we need angle at vertex A
+            // cos(angle_A) = (a²+c²-b²)/(2·a·c)  — angle between sides a and c
+            double cosA = (a * a + c * c - bv * bv) / (2 * a * c);
+            cosA = Math.Max(-1, Math.Min(1, cosA));
+            double sinA = Math.Sqrt(1 - cosA * cosA);
+
+            PointF pA = new(0, 0);
+            PointF pB = new((float)a, 0);
+            PointF pC = new((float)(c * cosA), -(float)(c * sinA)); // up
+
+            // Normalize to fit bounds
+            float minX = (float)Math.Min(pA.X, Math.Min(pB.X, pC.X));
+            float minY = (float)Math.Min(pA.Y, Math.Min(pB.Y, pC.Y));
+            float maxX = (float)Math.Max(pA.X, Math.Max(pB.X, pC.X));
+            float maxY = (float)Math.Max(pA.Y, Math.Max(pB.Y, pC.Y));
+
+            float shapeW = maxX - minX, shapeH = maxY - minY;
+            float padding = 12f;
+            float scaleX = (b.Width  - padding * 2) / Math.Max(shapeW, 1);
+            float scaleY = (b.Height - padding * 2) / Math.Max(shapeH, 1);
+            float scale  = Math.Min(scaleX, scaleY);
+
+            PointF[] pts = { Scale(pA), Scale(pB), Scale(pC) };
+
+            // Center in panel
+            float drawW = shapeW * scale, drawH = shapeH * scale;
+            float offX = b.X + (b.Width  - drawW) / 2f; // minX subtracted in Scale()
+            float offY = b.Y + (b.Height - drawH) / 2f; // minY subtracted in Scale()
+            for (int i = 0; i < pts.Length; i++)
+                pts[i] = new PointF(pts[i].X + offX, pts[i].Y + offY);
+
+            using var brush = ShapeGraphics.CreateFillBrush();
+            using var pen   = ShapeGraphics.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+
+            PointF Scale(PointF p) => new((p.X - minX) * scale, (p.Y - minY) * scale);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // PENTAGON
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A regular 5-sided polygon.
+    /// Parameters: side length (a)
+    /// Perimeter = 5 × a
+    /// Area      = (a² / 4) × √(5(5 + 2√5))
+    /// Drawing   : 5 vertices equally spaced on a circle of radius R,
+    ///             where R = a / (2 sin(π/5)).
+    /// </summary>
+    public class Pentagon : IShape
+    {
+        public string Name => "Pentagon";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Side (a)", 80.0) };
+
+        public double Perimeter(double[] v) => 5 * v[0];
+        public double Area(double[] v)      => v[0] * v[0] / 4 * Math.Sqrt(5 * (5 + 2 * Math.Sqrt(5)));
+
+        public void Draw(G g, RectangleF b, double[] v)
+            => DrawRegularPolygon(g, b, 5);
+
+        // Shared helper — draws any regular n-gon inside the padded square
+        internal static void DrawRegularPolygon(G g, RectangleF b, int n)
+        {
+            ShapeGraphics.EnableAntiAlias(g);
+            RectangleF sq = ShapeGraphics.PaddedSquare(b);
+            float cx = sq.X + sq.Width / 2f;
+            float cy = sq.Y + sq.Height / 2f;
+            float r  = sq.Width / 2f;
+
+            PointF[] pts = new PointF[n];
+            for (int i = 0; i < n; i++)
+            {
+                // Start at top (−π/2), go clockwise
+                double angle = -Math.PI / 2 + 2 * Math.PI * i / n;
+                pts[i] = new PointF(cx + r * (float)Math.Cos(angle),
+                                    cy + r * (float)Math.Sin(angle));
+            }
+            using var brush = ShapeGraphics.CreateFillBrush();
+            using var pen   = ShapeGraphics.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // HEXAGON
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A regular 6-sided polygon.
+    /// Parameters: side length (a)
+    /// Perimeter = 6 × a
+    /// Area      = (3√3 / 2) × a²
+    /// Drawing   : 6 vertices on a circle, flat-top orientation (rotated 30°).
+    /// </summary>
+    public class Hexagon : IShape
+    {
+        public string Name => "Hexagon";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Side (a)", 70.0) };
+
+        public double Perimeter(double[] v) => 6 * v[0];
+        public double Area(double[] v)      => 3 * Math.Sqrt(3) / 2 * v[0] * v[0];
+
+        public void Draw(G g, RectangleF b, double[] v)
+            => Pentagon.DrawRegularPolygon(g, b, 6);
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // PARALLELOGRAM
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A quadrilateral with two pairs of parallel sides.
+    /// Parameters: base (a), side (b), slant angle θ (degrees, default 60°)
+    /// Perimeter = 2(a + b)
+    /// Area      = a × b × sin(θ)
+    /// Drawing   : 4 vertices with horizontal offset = b × cos(θ).
+    /// </summary>
+    public class Parallelogram : IShape
+    {
+        public string Name => "Parallelogram";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Base (a)", 100.0), ("Side (b)", 60.0), ("Angle θ (°)", 60.0) };
+
+        public double Perimeter(double[] v) => 2 * (v[0] + v[1]);
+        public double Area(double[] v)      => v[0] * v[1] * Math.Sin(v[2] * Math.PI / 180);
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphics.EnableAntiAlias(g);
+            double a   = Math.Max(v[0], 1);
+            double bv  = Math.Max(v[1], 1);
+            double deg = v[2];
+            double rad = deg * Math.PI / 180;
+
+            // Logical coordinates (unscaled)
+            double offset = bv * Math.Cos(rad);
+            double height = bv * Math.Sin(rad);
+
+            // Shape bounding box in logical space
+            double logW = a + Math.Abs(offset);
+            double logH = height;
+
+            float padding = 12f;
+            float scaleX  = (b.Width  - padding * 2) / (float)Math.Max(logW, 1);
+            float scaleY  = (b.Height - padding * 2) / (float)Math.Max(logH, 1);
+            float scale   = Math.Min(scaleX, scaleY);
+
+            float sw = (float)(logW * scale);
+            float sh = (float)(logH * scale);
+            float ox = b.X + (b.Width  - sw) / 2f;
+            float oy = b.Y + (b.Height - sh) / 2f;
+
+            float off = (float)(offset * scale);
+            float w   = (float)(a  * scale);
+            float h   = (float)(height * scale);
+
+            // Bottom-left, bottom-right, top-right, top-left
+            PointF[] pts =
+            {
+                new(ox,          oy + h),
+                new(ox + w,      oy + h),
+                new(ox + w + off, oy),
+                new(ox + off,    oy)
+            };
+
+            using var brush = ShapeGraphics.CreateFillBrush();
+            using var pen   = ShapeGraphics.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // TRAPEZE  (right / isosceles trapezoid)
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A quadrilateral with exactly one pair of parallel sides.
+    /// Parameters: top base (a), bottom base (b), height (h)
+    /// Perimeter = a + b + 2 × leg,  where leg = √[h² + ((b−a)/2)²]
+    /// Area      = (a + b) / 2 × h
+    /// Drawing   : isosceles trapezoid — top centered over bottom.
+    /// </summary>
+    public class Trapeze : IShape
+    {
+        public string Name => "Trapeze";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Top base (a)", 60.0), ("Bottom base (b)", 100.0), ("Height (h)", 60.0) };
+
+        public double Perimeter(double[] v)
+        {
+            double leg = Math.Sqrt(v[2] * v[2] + Math.Pow((v[1] - v[0]) / 2, 2));
+            return v[0] + v[1] + 2 * leg;
+        }
+        public double Area(double[] v) => (v[0] + v[1]) / 2 * v[2];
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphics.EnableAntiAlias(g);
+            float a = (float)v[0], bv = (float)v[1], h = (float)v[2];
+
+            float logW = bv, logH = h;
+            float padding = 12f;
+            float scaleX  = (b.Width  - padding * 2) / Math.Max(logW, 1);
+            float scaleY  = (b.Height - padding * 2) / Math.Max(logH, 1);
+            float scale   = Math.Min(scaleX, scaleY);
+
+            float sw = bv  * scale;
+            float sh = h   * scale;
+            float aw = a   * scale;
+            float ox = b.X + (b.Width  - sw) / 2f;
+            float oy = b.Y + (b.Height - sh) / 2f;
+
+            PointF[] pts =
+            {
+                new(ox + (sw - aw) / 2f, oy),          // top-left
+                new(ox + (sw + aw) / 2f, oy),          // top-right
+                new(ox + sw,             oy + sh),      // bottom-right
+                new(ox,                  oy + sh)       // bottom-left
+            };
+
+            using var brush = ShapeGraphics.CreateFillBrush();
+            using var pen   = ShapeGraphics.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────
+    // RHOMBUS
+    // ────────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// A quadrilateral with all four sides equal and diagonals bisecting at 90°.
+    /// Parameters: diagonal d1 (horizontal), diagonal d2 (vertical)
+    /// Perimeter = 2 × √(d1² + d2²)
+    /// Area      = (d1 × d2) / 2
+    /// Drawing   : diamond shape from the four midpoints of d1 and d2.
+    /// </summary>
+    public class Rhombus : IShape
+    {
+        public string Name => "Rhombus";
+        public IReadOnlyList<(string Label, double DefaultValue)> Parameters =>
+            new[] { ("Diagonal d1", 100.0), ("Diagonal d2", 70.0) };
+
+        public double Perimeter(double[] v) => 2 * Math.Sqrt(v[0] * v[0] + v[1] * v[1]);
+        public double Area(double[] v)      => v[0] * v[1] / 2;
+
+        public void Draw(G g, RectangleF b, double[] v)
+        {
+            ShapeGraphics.EnableAntiAlias(g);
+            float d1 = (float)v[0], d2 = (float)v[1];
+            RectangleF r = ShapeGraphics.PaddedRect(b, d1, d2);
+            float cx = r.X + r.Width / 2f;
+            float cy = r.Y + r.Height / 2f;
+
+            PointF[] pts =
+            {
+                new(cx,          r.Y),            // top
+                new(r.X + r.Width, cy),           // right
+                new(cx,          r.Y + r.Height), // bottom
+                new(r.X,         cy)              // left
+            };
+
+            using var brush = ShapeGraphics.CreateFillBrush();
+            using var pen   = ShapeGraphics.CreateBorderPen();
+            g.FillPolygon(brush, pts);
+            g.DrawPolygon(pen, pts);
+        }
+    }
+}

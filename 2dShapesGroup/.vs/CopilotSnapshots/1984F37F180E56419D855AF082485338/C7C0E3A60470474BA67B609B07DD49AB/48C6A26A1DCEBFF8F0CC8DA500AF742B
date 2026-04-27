@@ -1,0 +1,72 @@
+﻿using System;
+using System.Collections.Generic;
+using _2dShapesGroup.Interfaces;
+using ShapesApp.Models.BasicPolygons;
+using ShapesApp.Models.CurvedShapes;
+using ShapesApp.Models.IrregularShapes;
+
+namespace _2dShapesGroup.Models
+{
+    /// <summary>
+    /// Registro centralizado de todas las figuras disponibles.
+    /// Agregar una nueva figura solo requiere:
+    /// 1. Crear la clase que implemente IShape
+    /// 2. Registrarla aquí en el constructor
+    /// </summary>
+    public static class ShapeRegistry
+    {
+        private static readonly Dictionary<string, List<IShape>> _shapesByGroup = new();
+
+        static ShapeRegistry()
+        {
+            _shapesByGroup["Basic Polygons"] = new List<IShape>
+            {
+                new Square(),
+                new RectangleShape(),
+                new Triangle(),
+                new Pentagon(),
+                new Hexagon(),
+                new Parallelogram(),
+                new Trapeze(),
+                new Rhombus()
+            };
+
+            _shapesByGroup["Curved Shapes"] = new List<IShape>
+            {
+                new Circle(),
+                new Ellipse(),
+                new Semicircle(),
+                new Crescent()
+            };
+
+            _shapesByGroup["Irregular Shapes"] = new List<IShape>
+            {
+                new Star(),
+                new Scalene(),
+                new Trefoil(),
+                new Cross(),
+                new Kite(),
+                new Pie()
+            };
+        }
+
+        public static Dictionary<string, List<IShape>> GetAll() => _shapesByGroup;
+
+        /// <summary>
+        /// Obtiene una instancia de una figura por nombre.
+        /// </summary>
+        public static IShape GetShape(string name)
+        {
+            foreach (var group in _shapesByGroup.Values)
+            {
+                foreach (var shape in group)
+                {
+                    if (shape.Name == name)
+                        return shape;
+                }
+            }
+
+            throw new ArgumentException($"Forma no encontrada: {name}");
+        }
+    }
+}
