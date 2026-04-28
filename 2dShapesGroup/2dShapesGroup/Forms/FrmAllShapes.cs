@@ -18,9 +18,9 @@ namespace ShapesApp.Forms
     public partial class FrmAllShapes : Form
     {
         // ── State ─────────────────────────────────────────────────────────
-        private IShape?           _currentShape;
-        private List<TextBox>     _inputBoxes = new();
-        private double[]          _currentValues = Array.Empty<double>();
+        private IShape? _currentShape;
+        private List<TextBox> _inputBoxes = new();
+        private double[] _currentValues = Array.Empty<double>();
 
         // ── Constructor ───────────────────────────────────────────────────
         public FrmAllShapes()
@@ -67,8 +67,8 @@ namespace ShapesApp.Forms
             if (cmbShape.SelectedItem is not ShapeEntry entry) return;
 
             _currentShape = entry.Shape;
-            lblShapeName.Text  = _currentShape.Name;
-            lblGroupName.Text  = $"Group: {entry.GroupName}";
+            lblShapeName.Text = _currentShape.Name;
+            lblGroupName.Text = $"Group: {entry.GroupName}";
 
             RebuildInputPanel(_currentShape);
             Calculate();
@@ -86,18 +86,18 @@ namespace ShapesApp.Forms
             {
                 var lbl = new Label
                 {
-                    Text     = label + ":",
+                    Text = label + ":",
                     Location = new Point(8, y + 3),
                     AutoSize = true,
-                    Font     = new Font("Segoe UI", 9f)
+                    Font = new Font("Segoe UI", 9f)
                 };
 
                 var txt = new TextBox
                 {
-                    Text     = defaultVal.ToString("0.##"),
+                    Text = defaultVal.ToString("0.##"),
                     Location = new Point(160, y),
-                    Width    = 80,
-                    Font     = new Font("Segoe UI", 9f)
+                    Width = 80,
+                    Font = new Font("Segoe UI", 9f)
                 };
                 txt.TextChanged += (s, e) => Calculate();
 
@@ -129,10 +129,10 @@ namespace ShapesApp.Forms
             }
 
             double perimeter = _currentShape.Perimeter(_currentValues);
-            double area      = _currentShape.Area(_currentValues);
+            double area = _currentShape.Area(_currentValues);
 
             lblPerimeterValue.Text = $"{perimeter:F4}";
-            lblAreaValue.Text      = $"{area:F4}";
+            lblAreaValue.Text = $"{area:F4}";
 
             picGraphic.Invalidate();   // triggers Paint → Draw
         }
@@ -164,15 +164,25 @@ namespace ShapesApp.Forms
         private sealed class ShapeEntry
         {
             public string GroupName { get; }
-            public IShape Shape     { get; }
+            public IShape Shape { get; }
 
             public ShapeEntry(string groupName, IShape shape)
             {
                 GroupName = groupName;
-                Shape     = shape;
+                Shape = shape;
             }
 
             public override string ToString() => Shape.Name;
+        }
+
+        private void pnlTopBar_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void FrmAllShapes_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

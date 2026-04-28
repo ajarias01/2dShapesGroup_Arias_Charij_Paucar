@@ -60,6 +60,7 @@ namespace ShapesApp.Forms
             pnlTopBar.Padding = new Padding(10, 8, 10, 8);
             pnlTopBar.Size = new Size(700, 52);
             pnlTopBar.TabIndex = 1;
+            pnlTopBar.Paint += pnlTopBar_Paint;
             // 
             // lblSelectShape
             // 
@@ -315,6 +316,7 @@ namespace ShapesApp.Forms
             Name = "FrmAllShapes";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Shapes App — All Shapes";
+            Load += FrmAllShapes_Load;
             pnlTopBar.ResumeLayout(false);
             pnlTopBar.PerformLayout();
             pnlContent.ResumeLayout(false);
