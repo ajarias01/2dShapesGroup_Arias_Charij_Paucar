@@ -22,7 +22,7 @@ namespace ShapesApp.Models.IrregularStars
             new[] { ("Lobe radius r", 40.0) };
 
         public double Perimeter(double[] v) => 3 * 2 * Math.PI * v[0];
-        public double Area(double[] v)      => 3 * Math.PI * v[0] * v[0];
+        public double Area(double[] v) => 3 * Math.PI * v[0] * v[0];
 
         public void Draw(G g, RectangleF b, double[] v)
         {

@@ -22,7 +22,7 @@ namespace ShapesApp.Models.BasicPolygons
             new[] { ("Side (a)", 80.0) };
 
         public double Perimeter(double[] v) => 5 * v[0];
-        public double Area(double[] v)      => v[0] * v[0] / 4 * Math.Sqrt(5 * (5 + 2 * Math.Sqrt(5)));
+        public double Area(double[] v) => v[0] * v[0] / 4 * Math.Sqrt(5 * (5 + 2 * Math.Sqrt(5)));
 
         public void Draw(G g, RectangleF b, double[] v)
             => PolygonHelper.DrawRegularPolygon(g, b, 5, v[0]);

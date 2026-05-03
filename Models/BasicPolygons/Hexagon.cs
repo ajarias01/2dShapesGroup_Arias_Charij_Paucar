@@ -21,7 +21,7 @@ namespace ShapesApp.Models.BasicPolygons
             new[] { ("Side (a)", 70.0) };
 
         public double Perimeter(double[] v) => 6 * v[0];
-        public double Area(double[] v)      => 3 * Math.Sqrt(3) / 2 * v[0] * v[0];
+        public double Area(double[] v) => 3 * Math.Sqrt(3) / 2 * v[0] * v[0];
 
         public void Draw(G g, RectangleF b, double[] v)
             => PolygonHelper.DrawRegularPolygon(g, b, 6, v[0]);

@@ -52,7 +52,10 @@ namespace ShapesApp.Models.IrregularStars
 
             float padding = 12f;
             float sq   = Math.Min(b.Width, b.Height) - padding * 2;
-            float scale = sq / total;
+
+            float sizeScale = Math.Clamp(total / 100f, 0.1f, 1f);
+
+            float scale = (sq / total) * sizeScale;
             float a_s  = a * scale;
             float w_s  = w * scale;
 

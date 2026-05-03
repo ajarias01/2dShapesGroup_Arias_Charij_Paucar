@@ -38,6 +38,9 @@ namespace ShapesApp.Models.BasicPolygons
             float scaleY  = (b.Height - padding * 2) / Math.Max(logH, 1);
             float scale   = Math.Min(scaleX, scaleY);
 
+            float sizeScale = Math.Clamp(Math.Max(logW, logH) / 100f, 0.1f, 1f);
+            scale *= sizeScale;
+
             float sw = bv  * scale;
             float sh = h   * scale;
             float aw = a   * scale;

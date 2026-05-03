@@ -27,7 +27,7 @@ namespace ShapesApp.Models.BasicPolygons
         {
             ShapeGraphics.EnableAntiAlias(g);
             float d1 = (float)v[0], d2 = (float)v[1];
-            RectangleF r = ShapeGraphics.PaddedRect(b, d1, d2);
+            RectangleF r = ShapeGraphics.PaddedRect(b, d1, d2, Math.Max(d1, d2));
             float cx = r.X + r.Width / 2f;
             float cy = r.Y + r.Height / 2f;
 

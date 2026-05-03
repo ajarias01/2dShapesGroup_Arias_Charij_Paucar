@@ -118,6 +118,9 @@ namespace ShapesApp.Models.SpecialShapes
             float scaleY  = (b.Height - padding * 2) / Math.Max(h, 1);
             float scale   = Math.Min(scaleX, scaleY);
 
+            float sizeScale = Math.Clamp(Math.Max(w, h) / 100f, 0.1f, 1f);
+            scale *= sizeScale;
+
             float ws = w * scale, hs = h * scale;
             float ox = b.X + (b.Width  - ws) / 2f;
             float oy = b.Y + (b.Height - hs) / 2f;
