@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A quadrilateral with exactly one pair of parallel sides.
-    /// Parameters: top base (a), bottom base (b), height (h)
-    /// Perimeter = a + b + 2 × leg,  where leg = √[h² + ((b−a)/2)²]
-    /// Area      = (a + b) / 2 × h
-    /// Drawing   : isosceles trapezoid — top centered over bottom.
+    /// Un cuadrilátero con exactamente un par de lados paralelos.
+    /// Parámetros: base superior (a), base inferior (b), altura (h)
+    /// Perímetro = a + b + 2 × lado,  donde lado = √[h² + ((b−a)/2)²]
+    /// Área      = (a + b) / 2 × h
+    /// Dibujo   : trapecio isósceles — parte superior centrada sobre la inferior.
     /// </summary>
     public class Trapeze : IShape
     {

@@ -47,7 +47,6 @@ namespace ShapesApp.Forms
 
             this.tsmiSpecialShapes = new System.Windows.Forms.ToolStripMenuItem();
             this.miArrowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.miCloudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miHeartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miOctagonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 
@@ -231,7 +230,6 @@ namespace ShapesApp.Forms
             // tsmiSpecialShapes
             this.tsmiSpecialShapes.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miArrowToolStripMenuItem,
-            this.miCloudToolStripMenuItem,
             this.miHeartToolStripMenuItem,
             this.miOctagonToolStripMenuItem});
             this.tsmiSpecialShapes.ForeColor = System.Drawing.Color.White;
@@ -244,11 +242,6 @@ namespace ShapesApp.Forms
             this.miArrowToolStripMenuItem.Size = new System.Drawing.Size(150, 26);
             this.miArrowToolStripMenuItem.Text = "Arrow";
             this.miArrowToolStripMenuItem.Click += new System.EventHandler(this.miArrowToolStripMenuItem_Click);
-
-            this.miCloudToolStripMenuItem.Name = "miCloudToolStripMenuItem";
-            this.miCloudToolStripMenuItem.Size = new System.Drawing.Size(150, 26);
-            this.miCloudToolStripMenuItem.Text = "Cloud";
-            this.miCloudToolStripMenuItem.Click += new System.EventHandler(this.miCloudToolStripMenuItem_Click);
 
             this.miHeartToolStripMenuItem.Name = "miHeartToolStripMenuItem";
             this.miHeartToolStripMenuItem.Size = new System.Drawing.Size(150, 26);
@@ -369,7 +362,6 @@ namespace ShapesApp.Forms
 
         private System.Windows.Forms.ToolStripMenuItem tsmiSpecialShapes;
         private System.Windows.Forms.ToolStripMenuItem miArrowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem miCloudToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miHeartToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem miOctagonToolStripMenuItem;
 

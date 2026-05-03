@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A regular quadrilateral with four equal sides.
-    /// Parameters: side (a)
-    /// Perimeter = 4 × a
-    /// Area      = a²
-    /// Drawing   : axis-aligned square centered in the panel.
+    /// Un cuadrilátero regular con cuatro lados iguales.
+    /// Parámetros: lado (a)
+    /// Perímetro = 4 × a
+    /// Área      = a²
+    /// Dibujo   : cuadrado alineado con los ejes centrado en el panel.
     /// </summary>
     public class Square : IShape
     {
@@ -26,7 +26,18 @@ namespace ShapesApp.Models.BasicPolygons
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF r = ShapeGraphics.PaddedSquare(b);
+            float side = (float)v[0];
+            float padding = 12f;
+            float availableSize = Math.Min(b.Width, b.Height) - padding * 2;
+
+            // Limita el lado para que quepa dentro del espacio disponible
+            float sideScaled = Math.Min(side, availableSize);
+
+            float x = b.X + (b.Width - sideScaled) / 2f;
+            float y = b.Y + (b.Height - sideScaled) / 2f;
+
+            RectangleF r = new RectangleF(x, y, sideScaled, sideScaled);
+
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
             g.FillRectangle(brush, r);

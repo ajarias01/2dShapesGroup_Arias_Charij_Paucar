@@ -9,12 +9,12 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.SpecialShapes
 {
     /// <summary>
-    /// A heart shape built from two cubic Bézier arcs.
-    /// Parameters: size (scale factor)
-    /// Area      ≈ (13π/2) × r²   for a unit cardioid; scaled approximately here.
-    /// Perimeter ≈ 8√2 × r        (approximate arc length).
-    /// Drawing   : GraphicsPath using AddBezier for the two lobes.
-    ///             The path is normalized to a unit square then scaled to fit.
+    /// Una forma de corazón construida a partir de dos arcos cúbicos de Bézier.
+    /// Parámetros: tamaño (factor de escala)
+    /// Área      ≈ (13π/2) × r²   para un cardioide unitario; escalado aproximadamente aquí.
+    /// Perímetro ≈ 8√2 × r        (longitud de arco aproximada).
+    /// Dibujo   : GraphicsPath usando AddBezier para los dos lóbulos.
+    ///            La ruta se normaliza a un cuadrado unitario y se escala para ajustarse.
     /// </summary>
     public class Heart : IShape
     {
@@ -28,36 +28,40 @@ namespace ShapesApp.Models.SpecialShapes
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            float sq    = Math.Min(b.Width, b.Height) - 24;
-            float scale = sq / 200f;   // our heart is defined in a 200×180 logical box
+            float size = (float)v[0];
+            float padding = 12f;
+            float availableSize = Math.Min(b.Width, b.Height) - padding * 2;
+
+            // Scale size to fit within available space
+            float scale = Math.Min(size / 100f, availableSize / 200f);
             float cx    = b.X + b.Width  / 2f;
             float cy    = b.Y + b.Height / 2f;
 
-            // Heart defined in logical coords (centered at 0,0):
-            //   top     = (0,  -90)
-            //   right-tip of right lobe = (100, -60)
-            //   bottom  = (0,   90)
-            //   left-tip of left lobe   = (-100, -60)
-            // We build it with two Bézier arcs:
+            // Corazón definido en coordenadas lógicas (centrado en 0,0):
+            //   arriba     = (0,  -90)
+            //   punta-derecha del lóbulo derecho = (100, -60)
+            //   abajo  = (0,   90)
+            //   punta-izquierda del lóbulo izquierdo   = (-100, -60)
+            // Lo construimos con dos arcos de Bézier:
 
             using var path = new GraphicsPath();
 
             PointF T(float x, float y) => new(cx + x * scale, cy + y * scale);
 
-            // Right lobe (top → right-peak → bottom)
+            // Lóbulo derecho (arriba → punta-derecha → abajo)
             path.AddBezier(
-                T(0, -40),      // start: top-center (the dip)
+                T(0, -40),      // inicio: centro-superior (la depresión)
                 T(100, -90),    // control 1
                 T(130, 40),     // control 2
-                T(0, 90)        // end: bottom tip
+                T(0, 90)        // fin: punta inferior
             );
 
-            // Left lobe (bottom → left-peak → top)
+            // Lóbulo izquierdo (abajo → punta-izquierda → arriba)
             path.AddBezier(
-                T(0, 90),       // start: bottom tip
+                T(0, 90),       // inicio: punta inferior
                 T(-130, 40),    // control 1
                 T(-100, -90),   // control 2
-                T(0, -40)       // end: top-center
+                T(0, -40)       // fin: centro-superior
             );
 
             path.CloseFigure();

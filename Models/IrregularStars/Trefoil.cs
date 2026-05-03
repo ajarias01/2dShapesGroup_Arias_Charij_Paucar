@@ -8,12 +8,12 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.IrregularStars
 {
     /// <summary>
-    /// Three circles arranged symmetrically around a central point, overlapping
-    /// to form a three-leaf clover.
-    /// Parameters: lobe radius r
-    /// Area      ≈ 3 × π × r²  (three full circles, overlap ignored for simplicity)
-    /// Perimeter ≈ 3 × 2π × r  (three full arcs)
-    /// Drawing   : three ellipses placed at 120° intervals around center.
+    /// Tres círculos dispuestos simétricamente alrededor de un punto central, superpuestos
+    /// para formar un trébol de tres hojas.
+    /// Parámetros: radio del lóbulo r
+    /// Área      ≈ 3 × π × r²  (tres círculos completos, superposición ignorada por simplicidad)
+    /// Perímetro ≈ 3 × 2π × r  (tres arcos completos)
+    /// Dibujo   : tres elipses colocadas a intervalos de 120° alrededor del centro.
     /// </summary>
     public class Trefoil : IShape
     {
@@ -28,24 +28,25 @@ namespace ShapesApp.Models.IrregularStars
         {
             ShapeGraphics.EnableAntiAlias(g);
             float r   = (float)v[0];
-            float sq  = Math.Min(b.Width, b.Height) - 24;
-            // Each lobe circle fits within half the square
-            float scale = sq / (r * 4);
-            float rs  = r * scale;   // scaled lobe radius
+            float padding = 12f;
+            float availableSize = Math.Min(b.Width, b.Height) - padding * 2;
+
+            // Scale radius to fit within available space (diameter of trefoil ≈ 4r)
+            float maxSize = availableSize / 4f;
+            float rs = Math.Min(r, maxSize);
+
             float cx  = b.X + b.Width  / 2f;
             float cy  = b.Y + b.Height / 2f;
 
             using var brush = ShapeGraphics.CreateFillBrush();
-            using var pen   = ShapeGraphics.CreateBorderPen();
 
-            // Three lobes at 90°, 210°, 330° (top, bottom-left, bottom-right)
+            // Tres lóbulos a 90°, 210°, 330° (arriba, abajo-izquierda, abajo-derecha)
             double[] angles = { -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI / 3, -Math.PI / 2 + 4 * Math.PI / 3 };
             foreach (double angle in angles)
             {
                 float lx = cx + (float)(rs * Math.Cos(angle)) - rs;
                 float ly = cy + (float)(rs * Math.Sin(angle)) - rs;
                 g.FillEllipse(brush, lx, ly, rs * 2, rs * 2);
-                g.DrawEllipse(pen,   lx, ly, rs * 2, rs * 2);
             }
         }
     }

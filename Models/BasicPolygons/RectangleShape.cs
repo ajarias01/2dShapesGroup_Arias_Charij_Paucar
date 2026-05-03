@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A quadrilateral with opposite sides equal and all angles 90°.
-    /// Parameters: width (a), height (b)
-    /// Perimeter = 2(a + b)
-    /// Area      = a × b
-    /// Drawing   : rectangle scaled to fit, preserving aspect ratio a:b.
+    /// Un cuadrilátero con lados opuestos iguales y todos los ángulos de 90°.
+    /// Parámetros: ancho (a), alto (b)
+    /// Perímetro = 2(a + b)
+    /// Área      = a × b
+    /// Dibujo   : rectángulo escalado para ajustarse, preservando la relación de aspecto a:b.
     /// </summary>
     public class RectangleShape : IShape
     {

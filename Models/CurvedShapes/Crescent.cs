@@ -9,14 +9,14 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.CurvedShapes
 {
     /// <summary>
-    /// A crescent (lune) formed by subtracting a smaller circle from a larger one,
-    /// offset horizontally to create the moon-like shape.
-    /// Parameters: outer radius R, inner radius r (r &lt; R)
-    /// Area ≈ π × (R² − r²) / 2  (approximate for the standard crescent)
-    /// Perimeter ≈ π × (R + r)   (arc of outer + arc of inner)
-    /// Drawing    : uses a GraphicsPath with AddEllipse for outer circle and
-    ///              the offset inner circle, combined with FillMode.Alternate
-    ///              to punch out the inner region.
+    /// Una luna (semiluna) formada restando un círculo más pequeño de uno más grande,
+    /// desplazado horizontalmente para crear la forma de media luna.
+    /// Parámetros: radio exterior R, radio interior r (r &lt; R)
+    /// Área ≈ π × (R² − r²) / 2  (aproximado para la media luna estándar)
+    /// Perímetro ≈ π × (R + r)   (arco exterior + arco interior)
+    /// Dibujo    : usa un GraphicsPath con AddEllipse para el círculo exterior y
+    ///             el círculo interior desplazado, combinado con FillMode.Alternate
+    ///             para recortar la región interior.
     /// </summary>
     public class Crescent : IShape
     {
@@ -38,18 +38,18 @@ namespace ShapesApp.Models.CurvedShapes
             float cx = b.X + b.Width  / 2f;
             float cy = b.Y + b.Height / 2f;
 
-            // Outer circle bounding box (centered)
+            // Cuadro delimitador del círculo exterior (centrado)
             RectangleF outer = new(cx - R * scale, cy - R * scale,
                                    R * 2 * scale,  R * 2 * scale);
 
-            // Inner circle offset to the right so the crescent opens leftward
-            float offset = (R - r) * 0.8f * scale;
+            // Círculo interior desplazado hacia la derecha para que la media luna se abra hacia la izquierda
+            float offset = (R - r) * 0.95f * scale;
             RectangleF inner = new(cx - r * scale + offset, cy - r * scale,
                                    r * 2 * scale,            r * 2 * scale);
 
             using var path  = new GraphicsPath(FillMode.Alternate);
-            path.AddEllipse(outer);   // outer boundary
-            path.AddEllipse(inner);   // inner cutout (Alternate mode punches it out)
+            path.AddEllipse(outer);   // límite exterior
+            path.AddEllipse(inner);   // recorte interior (el modo Alternate lo recorta)
 
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();

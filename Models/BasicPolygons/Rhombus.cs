@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A quadrilateral with all four sides equal and diagonals bisecting at 90°.
-    /// Parameters: diagonal d1 (horizontal), diagonal d2 (vertical)
-    /// Perimeter = 2 × √(d1² + d2²)
-    /// Area      = (d1 × d2) / 2
-    /// Drawing   : diamond shape from the four midpoints of d1 and d2.
+    /// Un cuadrilátero con los cuatro lados iguales y diagonales que se bisecan a 90°.
+    /// Parámetros: diagonal d1 (horizontal), diagonal d2 (vertical)
+    /// Perímetro = 2 × √(d1² + d2²)
+    /// Área      = (d1 × d2) / 2
+    /// Dibujo   : forma de diamante desde los cuatro puntos medios de d1 y d2.
     /// </summary>
     public class Rhombus : IShape
     {

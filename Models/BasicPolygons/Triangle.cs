@@ -8,12 +8,12 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A three-sided polygon with arbitrary side lengths.
-    /// Parameters: side a, side b, side c
-    /// Perimeter = a + b + c
-    /// Area      = √[s(s−a)(s−b)(s−c)]  where s = (a+b+c)/2  (Heron's formula)
-    /// Drawing   : vertex A at origin, B along x-axis; C found via cosine rule.
-    ///             The triangle is then scaled and centered in the panel.
+    /// Un polígono de tres lados con longitudes de lado arbitrarias.
+    /// Parámetros: lado a, lado b, lado c
+    /// Perímetro = a + b + c
+    /// Área      = √[s(s−a)(s−b)(s−c)]  donde s = (a+b+c)/2  (fórmula de Herón)
+    /// Dibujo   : vértice A en el origen, B sobre el eje x; C encontrado mediante la regla del coseno.
+    ///            El triángulo se escala y centra en el panel.
     /// </summary>
     public class Triangle : IShape
     {
@@ -35,7 +35,7 @@ namespace ShapesApp.Models.BasicPolygons
             ShapeGraphics.EnableAntiAlias(g);
             double a = v[0], bv = v[1], c = v[2];
 
-            // Place A=(0,0), B=(a,0), then find C via cosine rule
+            // Coloca A=(0,0), B=(a,0), luego encuentra C mediante la regla del coseno
             double cosA = (a * a + c * c - bv * bv) / (2 * a * c);
             cosA = Math.Max(-1, Math.Min(1, cosA));
             double sinA = Math.Sqrt(1 - cosA * cosA);
@@ -44,7 +44,7 @@ namespace ShapesApp.Models.BasicPolygons
             PointF pB = new((float)a, 0);
             PointF pC = new((float)(c * cosA), -(float)(c * sinA));
 
-            // Normalize to fit bounds
+            // Normaliza para ajustarse a los límites
             float minX = (float)Math.Min(pA.X, Math.Min(pB.X, pC.X));
             float minY = (float)Math.Min(pA.Y, Math.Min(pB.Y, pC.Y));
             float maxX = (float)Math.Max(pA.X, Math.Max(pB.X, pC.X));
@@ -58,7 +58,7 @@ namespace ShapesApp.Models.BasicPolygons
 
             PointF[] pts = { Scale(pA), Scale(pB), Scale(pC) };
 
-            // Center in panel
+            // Centra en el panel
             float drawW = shapeW * scale, drawH = shapeH * scale;
             float offX = b.X + (b.Width  - drawW) / 2f;
             float offY = b.Y + (b.Height - drawH) / 2f;

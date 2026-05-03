@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A quadrilateral with two pairs of parallel sides.
-    /// Parameters: base (a), side (b), slant angle θ (degrees, default 60°)
-    /// Perimeter = 2(a + b)
-    /// Area      = a × b × sin(θ)
-    /// Drawing   : 4 vertices with horizontal offset = b × cos(θ).
+    /// Un cuadrilátero con dos pares de lados paralelos.
+    /// Parámetros: base (a), lado (b), ángulo de inclinación θ (grados, predeterminado 60°)
+    /// Perímetro = 2(a + b)
+    /// Área      = a × b × sin(θ)
+    /// Dibujo   : 4 vértices con desplazamiento horizontal = b × cos(θ).
     /// </summary>
     public class Parallelogram : IShape
     {
@@ -31,11 +31,11 @@ namespace ShapesApp.Models.BasicPolygons
             double deg = v[2];
             double rad = deg * Math.PI / 180;
 
-            // Logical coordinates (unscaled)
+            // Coordenadas lógicas (sin escala)
             double offset = bv * Math.Cos(rad);
             double height = bv * Math.Sin(rad);
 
-            // Shape bounding box in logical space
+            // Cuadro delimitador de la forma en el espacio lógico
             double logW = a + Math.Abs(offset);
             double logH = height;
 
@@ -53,7 +53,7 @@ namespace ShapesApp.Models.BasicPolygons
             float w   = (float)(a  * scale);
             float h   = (float)(height * scale);
 
-            // Bottom-left, bottom-right, top-right, top-left
+            // Abajo-izquierda, abajo-derecha, arriba-derecha, arriba-izquierda
             PointF[] pts =
             {
                 new(ox,          oy + h),

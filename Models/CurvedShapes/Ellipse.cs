@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.CurvedShapes
 {
     /// <summary>
-    /// An oval defined by semi-axes a (horizontal) and b (vertical).
-    /// Parameters: semi-axis a, semi-axis b
-    /// Perimeter ≈ π × [3(a+b) − √((3a+b)(a+3b))]  (Ramanujan's approximation)
-    /// Area      = π × a × b
-    /// Drawing   : bounding rectangle scaled by a:b ratio, then ellipse inscribed.
+    /// Un óvalo definido por semiejes a (horizontal) y b (vertical).
+    /// Parámetros: semieje a, semieje b
+    /// Perímetro ≈ π × [3(a+b) − √((3a+b)(a+3b))]  (aproximación de Ramanujan)
+    /// Área      = π × a × b
+    /// Dibujo   : rectángulo delimitador escalado por la relación a:b, luego elipse inscrita.
     /// </summary>
     public class Ellipse : IShape
     {

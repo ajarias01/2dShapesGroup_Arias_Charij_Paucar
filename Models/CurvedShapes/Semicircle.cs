@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.CurvedShapes
 {
     /// <summary>
-    /// Half of a circle — a flat edge (diameter) plus a curved arc.
-    /// Parameters: radius (r)
-    /// Perimeter = π × r + 2r  (arc + diameter)
-    /// Area      = π × r² / 2
-    /// Drawing   : DrawPie with startAngle=180°, sweepAngle=180° (upper half).
+    /// La mitad de un círculo — un borde plano (diámetro) más un arco curvo.
+    /// Parámetros: radio (r)
+    /// Perímetro = π × r + 2r  (arco + diámetro)
+    /// Área      = π × r² / 2
+    /// Dibujo   : DrawPie con startAngle=180°, sweepAngle=180° (mitad superior).
     /// </summary>
     public class Semicircle : IShape
     {
@@ -26,19 +26,19 @@ namespace ShapesApp.Models.CurvedShapes
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            // Semicircle has a 2:1 aspect ratio (width is 2r, height is r)
-            RectangleF r = ShapeGraphics.PaddedRect(b, 2, 1);
+            float radius = (float)v[0];
+            float diameter = radius * 2;
 
-            // FillPie / DrawPie require the full circle bounding box.
-            // Since we draw the top half (180 to 360 degrees), the drawn part
-            // occupies the top half of this bounding box.
-            // Therefore, the bounding box needs to be twice as tall, and shifted
-            // down so that the top half aligns exactly with 'r'.
-            RectangleF fullCircle = new(r.X, r.Y, r.Width, r.Height * 2);
+            // Centra el semicírculo horizontalmente, lo posiciona en la porción superior
+            float x = b.X + (b.Width - diameter) / 2f;
+            float y = b.Y + (b.Height - radius) / 2f;
+
+            // Rectángulo delimitador del círculo completo para DrawPie
+            RectangleF fullCircle = new(x, y, diameter, diameter);
 
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
-            // Start at 180° (left), sweep 180° clockwise → upper semicircle
+            // Comienza a los 180° (izquierda), barre 180° en sentido de las manecillas → semicírculo superior
             g.FillPie(brush, fullCircle, 180f, 180f);
             g.DrawPie(pen,   fullCircle, 180f, 180f);
         }

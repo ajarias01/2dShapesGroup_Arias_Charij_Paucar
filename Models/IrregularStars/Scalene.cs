@@ -8,12 +8,12 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.IrregularStars
 {
     /// <summary>
-    /// A triangle with all sides of different lengths (scalene).
-    /// Same math as Group 1's Triangle; placed here to match the image layout.
-    /// Parameters: side a, side b, side c
-    /// Perimeter = a + b + c
-    /// Area      = Heron's formula
-    /// Drawing   : coordinates derived via cosine rule, then scaled to fit.
+    /// Un triángulo con todos los lados de diferentes longitudes (escaleno).
+    /// Las mismas matemáticas que el triángulo del Grupo 1; colocado aquí para coincidir con el diseño de la imagen.
+    /// Parámetros: lado a, lado b, lado c
+    /// Perímetro = a + b + c
+    /// Área      = fórmula de Herón
+    /// Dibujo   : coordenadas derivadas mediante la regla del coseno, luego escaladas para ajustarse.
     /// </summary>
     public class Scalene : IShape
     {

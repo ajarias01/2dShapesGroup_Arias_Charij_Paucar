@@ -8,12 +8,12 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.IrregularStars
 {
     /// <summary>
-    /// A regular star polygon with n points.
-    /// Parameters: number of points n, outer radius R, inner radius r
-    /// The star is built by alternating vertices on the outer and inner circles.
-    /// Perimeter ≈ 2n × side_length  (approximate; side = chord between adjacent outer/inner pts)
-    /// Area      ≈ (n × R² × sin(2π/n)) / 2 − (n × r² × sin(2π/n)) / 2
-    /// Drawing   : 2n vertices alternating on R and r circles.
+    /// Un polígono estrella regular con n puntas.
+    /// Parámetros: número de puntas n, radio exterior R, radio interior r
+    /// La estrella se construye alternando vértices en los círculos exterior e interior.
+    /// Perímetro ≈ 2n × longitud_lado  (aproximado; lado = cuerda entre puntos adyacentes exterior/interior)
+    /// Área      ≈ (n × R² × sin(2π/n)) / 2 − (n × r² × sin(2π/n)) / 2
+    /// Dibujo   : 2n vértices alternando en círculos R e r.
     /// </summary>
     public class Star : IShape
     {
@@ -59,7 +59,7 @@ namespace ShapesApp.Models.IrregularStars
             PointF[] pts = new PointF[2 * n];
             for (int i = 0; i < 2 * n; i++)
             {
-                // Outer vertices at even indices, inner at odd
+                // Vértices exteriores en índices pares, interiores en impares
                 double radius = (i % 2 == 0) ? R : r;
                 double angle  = -Math.PI / 2 + Math.PI * i / n;
                 pts[i] = new PointF(cx + (float)(radius * scale * Math.Cos(angle)),

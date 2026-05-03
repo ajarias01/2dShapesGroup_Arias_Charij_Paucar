@@ -8,25 +8,25 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.IrregularStars
 {
     /// <summary>
-    /// A plus-shaped cross with equal arms.
-    /// Parameters: arm length (a), arm width (w)
-    /// The cross is composed of two overlapping rectangles:
-    ///   horizontal: width = a*2+w, height = w
-    ///   vertical  : width = w, height = a*2+w
-    /// Perimeter = 4 × (a + w) × 2 / … simplified to 12 × a + 4 × w   (outer contour)
-    ///           = 4 × (outer_arm_top + outer_arm_side) × 2 — standard cross perimeter
-    ///           Actually: perimeter = 4 × a × 2 + ... the 12-segment polygon perimeter:
-    ///           = 4 × (2a + w) + 4 × w = 8a + 8w   → but typically: 12a if w=a
-    ///           Simple formula: Perimeter = 4 × (3a)  when w = a.
-    ///           General: P = 4 × (a + w) × ... we store 12 outer edges of length a each.
-    ///           Standard result: P = 12a + 4w  — No. Clean version:
-    ///           The 12-sided polygon: 4 edges of length a and 4 of length w, but there are
-    ///           actually 12 edges total: alternating a and (a-w)/2... complicated.
-    ///           We use the simpler approximate: P = 4 × (outer_width + outer_height - inner_corner×8)
-    ///           For an equal-armed cross: P = 12 × arm_length.
-    /// Area      = a × w × 2 + w × w  (two rectangles minus center counted twice)
-    ///           = w × (2a + w)  → full formula = 2 × a × w + w²
-    /// Drawing   : GraphicsPath with 12 vertices forming the cross outline.
+    /// Una cruz en forma de signo más con brazos iguales.
+    /// Parámetros: longitud del brazo (a), ancho del brazo (w)
+    /// La cruz se compone de dos rectángulos superpuestos:
+    ///   horizontal: ancho = a*2+w, alto = w
+    ///   vertical  : ancho = w, alto = a*2+w
+    /// Perímetro = 4 × (a + w) × 2 / … simplificado a 12 × a + 4 × w   (contorno exterior)
+    ///           = 4 × (parte_superior_brazo_exterior + parte_lateral_brazo_exterior) × 2 — perímetro de cruz estándar
+    ///           En realidad: perímetro = 4 × a × 2 + ... el perímetro del polígono de 12 segmentos:
+    ///           = 4 × (2a + w) + 4 × w = 8a + 8w   → pero típicamente: 12a si w=a
+    ///           Fórmula simple: Perímetro = 4 × (3a)  cuando w = a.
+    ///           General: P = 4 × (a + w) × ... almacenamos 12 bordes exteriores de longitud a cada uno.
+    ///           Resultado estándar: P = 12a + 4w  — No. Versión limpia:
+    ///           El polígono de 12 lados: 4 bordes de longitud a y 4 de longitud w, pero hay
+    ///           en realidad 12 bordes totales: alternando a y (a-w)/2... complicado.
+    ///           Usamos la aproximación más simple: P = 4 × (ancho_exterior + alto_exterior - esquina_interior×8)
+    ///           Para una cruz con brazos iguales: P = 12 × longitud_brazo.
+    /// Área      = a × w × 2 + w × w  (dos rectángulos menos el centro contado dos veces)
+    ///           = w × (2a + w)  → fórmula completa = 2 × a × w + w²
+    /// Dibujo   : GraphicsPath con 12 vértices formando el contorno de la cruz.
     /// </summary>
     public class Cross : IShape
     {
@@ -61,21 +61,21 @@ namespace ShapesApp.Models.IrregularStars
             float half = w_s / 2f;
             float arm  = a_s;
 
-            // 12 vertices of the cross, starting top-left and going clockwise
+            // 12 vértices de la cruz, comenzando en la esquina superior-izquierda y avanzando en sentido de las agujas del reloj
             PointF[] pts =
             {
-                new(cx - half,        cy - half - arm),   // top-left of top-arm
-                new(cx + half,        cy - half - arm),   // top-right of top-arm
-                new(cx + half,        cy - half),          // inner top-right
-                new(cx + half + arm,  cy - half),          // right-arm top-left
-                new(cx + half + arm,  cy + half),          // right-arm bottom-left
-                new(cx + half,        cy + half),          // inner bottom-right
-                new(cx + half,        cy + half + arm),    // bottom-arm top-right
-                new(cx - half,        cy + half + arm),    // bottom-arm top-left
-                new(cx - half,        cy + half),          // inner bottom-left
-                new(cx - half - arm,  cy + half),          // left-arm bottom-right
-                new(cx - half - arm,  cy - half),          // left-arm top-right
-                new(cx - half,        cy - half),           // inner top-left
+                new(cx - half,        cy - half - arm),   // superior-izquierda del brazo superior
+                new(cx + half,        cy - half - arm),   // superior-derecha del brazo superior
+                new(cx + half,        cy - half),          // interior superior-derecha
+                new(cx + half + arm,  cy - half),          // brazo-derecha superior-izquierda
+                new(cx + half + arm,  cy + half),          // brazo-derecha inferior-izquierda
+                new(cx + half,        cy + half),          // interior inferior-derecha
+                new(cx + half,        cy + half + arm),    // brazo-inferior superior-derecha
+                new(cx - half,        cy + half + arm),    // brazo-inferior superior-izquierda
+                new(cx - half,        cy + half),          // interior inferior-izquierda
+                new(cx - half - arm,  cy + half),          // brazo-izquierda inferior-derecha
+                new(cx - half - arm,  cy - half),          // brazo-izquierda superior-derecha
+                new(cx - half,        cy - half),           // interior superior-izquierda
             };
 
             using var brush = ShapeGraphics.CreateFillBrush();

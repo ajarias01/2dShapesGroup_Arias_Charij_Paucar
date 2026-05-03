@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.CurvedShapes
 {
     /// <summary>
-    /// A perfectly round closed curve with constant radius r.
-    /// Parameters: radius (r)
-    /// Perimeter (circumference) = 2π × r
-    /// Area                      = π × r²
-    /// Drawing: inscribed in a padded square using FillEllipse on a square rect.
+    /// Una curva cerrada perfectamente redonda con radio constante r.
+    /// Parámetros: radio (r)
+    /// Perímetro (circunferencia) = 2π × r
+    /// Área                        = π × r²
+    /// Dibujo: inscrito en un cuadrado relleno usando FillEllipse en un rectángulo cuadrado.
     /// </summary>
     public class Circle : IShape
     {
@@ -26,11 +26,15 @@ namespace ShapesApp.Models.CurvedShapes
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF sq = ShapeGraphics.PaddedSquare(b);
+            float radius = (float)v[0];
+            float diameter = radius * 2;
+            float x = b.X + (b.Width - diameter) / 2f;
+            float y = b.Y + (b.Height - diameter) / 2f;
+            RectangleF circle = new RectangleF(x, y, diameter, diameter);
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
-            g.FillEllipse(brush, sq);
-            g.DrawEllipse(pen, sq);
+            g.FillEllipse(brush, circle);
+            g.DrawEllipse(pen, circle);
         }
     }
 }

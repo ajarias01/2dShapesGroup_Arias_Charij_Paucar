@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.IrregularStars
 {
     /// <summary>
-    /// A quadrilateral with two pairs of adjacent sides equal.
-    /// Parameters: top half-width (w), top height (h1), bottom height (h2)
-    /// Perimeter = 2 × √(w²+h1²) + 2 × √(w²+h2²)
-    /// Area      = w × (h1 + h2)  (= d1×d2/2 where d1=2w, d2=h1+h2)
-    /// Drawing   : diamond-like shape with the top portion shorter than the bottom.
+    /// Un cuadrilátero con dos pares de lados adyacentes iguales.
+    /// Parámetros: mitad del ancho superior (w), altura superior (h1), altura inferior (h2)
+    /// Perímetro = 2 × √(w²+h1²) + 2 × √(w²+h2²)
+    /// Área      = w × (h1 + h2)  (= d1×d2/2 donde d1=2w, d2=h1+h2)
+    /// Dibujo   : forma de diamante con la parte superior más corta que la inferior.
     /// </summary>
     public class Kite : IShape
     {
@@ -43,10 +43,10 @@ namespace ShapesApp.Models.IrregularStars
 
             PointF[] pts =
             {
-                new(ox,             oy),                    // top
-                new(ox + w * scale, oy + h1 * scale),       // right (middle)
-                new(ox,             oy + sh),               // bottom
-                new(ox - w * scale, oy + h1 * scale)        // left (middle)
+                new(ox,             oy),                    // arriba
+                new(ox + w * scale, oy + h1 * scale),       // derecha (medio)
+                new(ox,             oy + sh),               // abajo
+                new(ox - w * scale, oy + h1 * scale)        // izquierda (medio)
             };
 
             using var brush = ShapeGraphics.CreateFillBrush();

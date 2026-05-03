@@ -8,13 +8,13 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.SpecialShapes
 {
     /// <summary>
-    /// A right-pointing arrow polygon.
-    /// Parameters: total width (w), total height (h), shaft height ratio (ratio 0..1)
-    /// Area      = shaft_area + triangle_head_area
-    ///           = (w × ratio × h) + (0.5 × head_width × h)
-    ///             where head_width is the arrowhead base.
-    /// Perimeter = sum of the 7 outer edges.
-    /// Drawing   : 7-vertex polygon.
+    /// Un polígono con forma de flecha apuntando hacia la derecha.
+    /// Parámetros: ancho total (w), alto total (h), relación de altura del eje (ratio 0..1)
+    /// Área      = área_eje + área_triángulo_cabeza
+    ///           = (w × ratio × h) + (0.5 × ancho_cabeza × h)
+    ///             donde ancho_cabeza es la base de la punta de flecha.
+    /// Perímetro = suma de los 7 bordes exteriores.
+    /// Dibujo   : polígono de 7 vértices.
     /// </summary>
     public class Arrow : IShape
     {
@@ -24,13 +24,78 @@ namespace ShapesApp.Models.SpecialShapes
 
         public double Perimeter(double[] v)
         {
-            double w  = v[0], h = v[1], ratio = v[2];
-            double sw = w * (1 - 0.35);           // shaft length (without head)
-            double sh = h * ratio;                 // shaft height
-            double headH = h;
-            double headW = w * 0.35;
-            // 7 segments: top-shaft, shaft-to-head-top, head diagonal, bottom-tip, head diagonal, head-to-shaft-bot, bottom-shaft
-            return 2 * sw + 2 * (headH - sh) + 2 * Math.Sqrt(headW * headW + headH * headH) + sh * 0;
+            double w = v[0], h = v[1], ratio = v[2];
+            ratio = Math.Max(0.1, Math.Min(0.9, ratio));
+
+            double shaftEnd = w * 0.65;
+            double shaftTop = h * (1 - ratio) / 2;
+            double shaftBot = h * (1 + ratio) / 2;
+            double headBase = w * 0.35;
+
+            // Calculate the 7 edges:
+            // 1. Top left vertical: from (0, shaftTop) to (shaftEnd, shaftTop)
+            double edge1 = shaftEnd;
+
+            // 2. Diagonal from (shaftEnd, shaftTop) to (w, h/2)
+            double dx2 = w - shaftEnd;
+            double dy2 = h / 2 - shaftTop;
+            double edge2 = Math.Sqrt(dx2 * dx2 + dy2 * dy2);
+
+            // 3. Diagonal from (w, h/2) to (shaftEnd, shaftBot)
+            double dx3 = w - shaftEnd;
+            double dy3 = shaftBot - h / 2;
+            double edge3 = Math.Sqrt(dx3 * dx3 + dy3 * dy3);
+
+            // 4. Bottom right vertical: from (shaftEnd, shaftBot) to (0, shaftBot)
+            double edge4 = shaftEnd;
+
+            // 5. Left vertical: from (0, shaftBot) to (0, shaftTop)
+            double edge5 = shaftBot - shaftTop;
+
+            // 6. Right diagonal at head: from (shaftEnd, shaftBot) to (w, h/2) [already counted as edge3]
+            // 7. Left diagonal at head: from (shaftEnd, shaftTop) to (w, h/2) [already counted as edge2]
+
+            // Actually, the polygon has these edges in order:
+            // (0, shaftTop) -> (shaftEnd, shaftTop) -> (w, h/2) -> (shaftEnd, shaftBot) -> (0, shaftBot) -> back to start
+            // That's 5 unique vertices, but we need 7. Let me reconsider the polygon structure.
+
+            // The 7-point polygon from Draw():
+            // 0: (0, shaftTop)
+            // 1: (shaftEnd, shaftTop)
+            // 2: (w, shaftTop_outer) = (w, 0) when head starts
+            // 3: (w, h/2) - tip
+            // 4: (w, shaftBot_outer) = (w, h)
+            // 5: (shaftEnd, shaftBot)
+            // 6: (0, shaftBot)
+
+            double shaftHeight = shaftBot - shaftTop;
+
+            // Edge from point 0 to 1: horizontal
+            double e1 = shaftEnd;
+
+            // Edge from point 1 to 2: vertical
+            double e2 = shaftTop;
+
+            // Edge from point 2 to 3: diagonal
+            double dx23 = w - shaftEnd;
+            double dy23 = h / 2 - 0;
+            double e3 = Math.Sqrt(dx23 * dx23 + dy23 * dy23);
+
+            // Edge from point 3 to 4: diagonal
+            double dx34 = w - shaftEnd;
+            double dy34 = h - h / 2;
+            double e4 = Math.Sqrt(dx34 * dx34 + dy34 * dy34);
+
+            // Edge from point 4 to 5: vertical
+            double e5 = h - shaftBot;
+
+            // Edge from point 5 to 6: horizontal
+            double e6 = shaftEnd;
+
+            // Edge from point 6 to 0: vertical
+            double e7 = shaftHeight;
+
+            return e1 + e2 + e3 + e4 + e5 + e6 + e7;
         }
 
         public double Area(double[] v)

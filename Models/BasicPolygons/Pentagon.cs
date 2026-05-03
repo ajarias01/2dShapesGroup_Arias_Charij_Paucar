@@ -8,12 +8,12 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A regular 5-sided polygon.
-    /// Parameters: side length (a)
-    /// Perimeter = 5 × a
-    /// Area      = (a² / 4) × √(5(5 + 2√5))
-    /// Drawing   : 5 vertices equally spaced on a circle of radius R,
-    ///             where R = a / (2 sin(π/5)).
+    /// Un polígono regular de 5 lados.
+    /// Parámetros: longitud del lado (a)
+    /// Perímetro = 5 × a
+    /// Área      = (a² / 4) × √(5(5 + 2√5))
+    /// Dibujo   : 5 vértices espaciados equitativamente en un círculo de radio R,
+    ///            donde R = a / (2 sin(π/5)).
     /// </summary>
     public class Pentagon : IShape
     {
@@ -25,6 +25,6 @@ namespace ShapesApp.Models.BasicPolygons
         public double Area(double[] v)      => v[0] * v[0] / 4 * Math.Sqrt(5 * (5 + 2 * Math.Sqrt(5)));
 
         public void Draw(G g, RectangleF b, double[] v)
-            => PolygonHelper.DrawRegularPolygon(g, b, 5);
+            => PolygonHelper.DrawRegularPolygon(g, b, 5, v[0]);
     }
 }

@@ -8,11 +8,11 @@ using G = System.Drawing.Graphics;
 namespace ShapesApp.Models.BasicPolygons
 {
     /// <summary>
-    /// A regular 6-sided polygon.
-    /// Parameters: side length (a)
-    /// Perimeter = 6 × a
-    /// Area      = (3√3 / 2) × a²
-    /// Drawing   : 6 vertices on a circle, flat-top orientation (rotated 30°).
+    /// Un polígono regular de 6 lados.
+    /// Parámetros: longitud del lado (a)
+    /// Perímetro = 6 × a
+    /// Área      = (3√3 / 2) × a²
+    /// Dibujo   : 6 vértices en un círculo, orientación plana (rotado 30°).
     /// </summary>
     public class Hexagon : IShape
     {
@@ -24,6 +24,6 @@ namespace ShapesApp.Models.BasicPolygons
         public double Area(double[] v)      => 3 * Math.Sqrt(3) / 2 * v[0] * v[0];
 
         public void Draw(G g, RectangleF b, double[] v)
-            => PolygonHelper.DrawRegularPolygon(g, b, 6);
+            => PolygonHelper.DrawRegularPolygon(g, b, 6, v[0]);
     }
 }

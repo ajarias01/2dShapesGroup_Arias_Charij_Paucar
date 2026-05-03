@@ -207,16 +207,7 @@ namespace ShapesApp.Forms
             frm.Show(); 
         }
 
-        private void miCloudToolStripMenuItem_Click(object sender, EventArgs e) 
-        { 
-            HideMainPanelAndCloseOthers();
-            FrmCloud frm = new FrmCloud(); 
-            frm.MdiParent = this; 
-            frm.WindowState = FormWindowState.Maximized;
-            frm.Show(); 
-        }
-
-        private void miHeartToolStripMenuItem_Click(object sender, EventArgs e) 
+        private void miHeartToolStripMenuItem_Click(object sender, EventArgs e)
         { 
             HideMainPanelAndCloseOthers();
             FrmHeart frm = new FrmHeart(); 
