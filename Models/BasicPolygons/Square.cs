@@ -26,7 +26,7 @@ namespace ShapesApp.Models.BasicPolygons
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF r = ShapeGraphics.PaddedSquare(b);
+            RectangleF r = ShapeGraphics.PaddedSquare(b, (float)v[0]);
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
             g.FillRectangle(brush, r);

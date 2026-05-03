@@ -35,7 +35,7 @@ namespace ShapesApp.Models.IrregularStars
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF sq = ShapeGraphics.PaddedSquare(b);
+            RectangleF sq = ShapeGraphics.PaddedSquare(b, (float)v[0]);
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
             // Start at top (-90°) so the sector opens downward/rightward nicely

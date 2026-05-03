@@ -27,7 +27,7 @@ namespace ShapesApp.Models.CurvedShapes
         {
             ShapeGraphics.EnableAntiAlias(g);
             // Semicircle has a 2:1 aspect ratio (width is 2r, height is r)
-            RectangleF r = ShapeGraphics.PaddedRect(b, 2, 1);
+            RectangleF r = ShapeGraphics.PaddedRect(b, 2, 1, (float)v[0] * 2);
 
             // FillPie / DrawPie require the full circle bounding box.
             // Since we draw the top half (180 to 360 degrees), the drawn part

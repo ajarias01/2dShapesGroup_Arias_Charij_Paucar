@@ -13,10 +13,10 @@ namespace ShapesApp.Models.BasicPolygons
         /// <summary>
         /// Draws a regular n-sided polygon (n-gon) inside a padded square.
         /// </summary>
-        public static void DrawRegularPolygon(G g, RectangleF b, int n)
+        public static void DrawRegularPolygon(G g, RectangleF b, int n, float inputSize = 100f)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF sq = ShapeGraphics.PaddedSquare(b);
+            RectangleF sq = ShapeGraphics.PaddedSquare(b, inputSize);
             float cx = sq.X + sq.Width / 2f;
             float cy = sq.Y + sq.Height / 2f;
             float r  = sq.Width / 2f;

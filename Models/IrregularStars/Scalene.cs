@@ -53,6 +53,9 @@ namespace ShapesApp.Models.IrregularStars
             float scaleY = (b.Height - padding * 2) / Math.Max(shapeH, 1);
             float scale  = Math.Min(scaleX, scaleY);
 
+            float sizeScale = Math.Clamp((float)Math.Max(Math.Max(v[0], v[1]), v[2]) / 100f, 0.1f, 1f);
+            scale *= sizeScale;
+
             float drawW = shapeW * scale, drawH = shapeH * scale;
             float offX = b.X + (b.Width  - drawW) / 2f;
             float offY = b.Y + (b.Height - drawH) / 2f;

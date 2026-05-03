@@ -37,6 +37,9 @@ namespace ShapesApp.Models.IrregularStars
             float scaleY  = (b.Height - padding * 2) / Math.Max(logH, 1);
             float scale   = Math.Min(scaleX, scaleY);
 
+            float sizeScale = Math.Clamp(Math.Max(logW, logH) / 100f, 0.1f, 1f);
+            scale *= sizeScale;
+
             float sw = logW * scale, sh = logH * scale;
             float ox  = b.X + (b.Width  - sw) / 2f + w * scale;
             float oy  = b.Y + (b.Height - sh) / 2f;

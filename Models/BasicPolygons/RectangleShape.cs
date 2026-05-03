@@ -27,7 +27,8 @@ namespace ShapesApp.Models.BasicPolygons
         {
             ShapeGraphics.EnableAntiAlias(g);
             double w = Math.Max(v[0], 1), h = Math.Max(v[1], 1);
-            RectangleF r = ShapeGraphics.PaddedRect(b, (float)w, (float)h);
+            float maxDim = (float)Math.Max(w, h);
+            RectangleF r = ShapeGraphics.PaddedRect(b, (float)w, (float)h, maxDim);
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
             g.FillRectangle(brush, r);

@@ -56,6 +56,9 @@ namespace ShapesApp.Models.BasicPolygons
             float scaleY = (b.Height - padding * 2) / Math.Max(shapeH, 1);
             float scale  = Math.Min(scaleX, scaleY);
 
+            float sizeScale = Math.Clamp((float)Math.Max(Math.Max(v[0], v[1]), v[2]) / 100f, 0.1f, 1f);
+            scale *= sizeScale;
+
             PointF[] pts = { Scale(pA), Scale(pB), Scale(pC) };
 
             // Center in panel

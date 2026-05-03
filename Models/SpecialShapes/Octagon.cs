@@ -26,7 +26,7 @@ namespace ShapesApp.Models.SpecialShapes
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF sq = ShapeGraphics.PaddedSquare(b);
+            RectangleF sq = ShapeGraphics.PaddedSquare(b, (float)v[0]);
             float cx = sq.X + sq.Width / 2f;
             float cy = sq.Y + sq.Height / 2f;
             float r  = sq.Width / 2f;

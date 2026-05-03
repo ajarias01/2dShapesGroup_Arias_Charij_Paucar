@@ -22,21 +22,26 @@ namespace ShapesApp.Models.IrregularStars
             new[] { ("Lobe radius r", 40.0) };
 
         public double Perimeter(double[] v) => 3 * 2 * Math.PI * v[0];
-        public double Area(double[] v)      => 3 * Math.PI * v[0] * v[0];
+        public double Area(double[] v) => 3 * Math.PI * v[0] * v[0];
 
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            float r   = (float)v[0];
-            float sq  = Math.Min(b.Width, b.Height) - 24;
+            float r = (float)v[0];
+            float sq = Math.Min(b.Width, b.Height) - 24;
+
             // Each lobe circle fits within half the square
-            float scale = sq / (r * 4);
-            float rs  = r * scale;   // scaled lobe radius
-            float cx  = b.X + b.Width  / 2f;
-            float cy  = b.Y + b.Height / 2f;
+            float baseScale = sq / (r * 4);
+
+            // Size scale driven by the lobe radius input: clamp to [10% – 100%] of available space
+            float sizeScale = Math.Clamp((float)v[0] / 100f, 0.1f, 1f);
+            float rs = r * baseScale * sizeScale;   // scaled lobe radius
+
+            float cx = b.X + b.Width / 2f;
+            float cy = b.Y + b.Height / 2f;
 
             using var brush = ShapeGraphics.CreateFillBrush();
-            using var pen   = ShapeGraphics.CreateBorderPen();
+            using var pen = ShapeGraphics.CreateBorderPen();
 
             // Three lobes at 90°, 210°, 330° (top, bottom-left, bottom-right)
             double[] angles = { -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI / 3, -Math.PI / 2 + 4 * Math.PI / 3 };
@@ -45,7 +50,7 @@ namespace ShapesApp.Models.IrregularStars
                 float lx = cx + (float)(rs * Math.Cos(angle)) - rs;
                 float ly = cy + (float)(rs * Math.Sin(angle)) - rs;
                 g.FillEllipse(brush, lx, ly, rs * 2, rs * 2);
-                g.DrawEllipse(pen,   lx, ly, rs * 2, rs * 2);
+                g.DrawEllipse(pen, lx, ly, rs * 2, rs * 2);
             }
         }
     }

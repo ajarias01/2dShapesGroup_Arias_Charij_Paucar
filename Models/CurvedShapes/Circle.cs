@@ -26,7 +26,7 @@ namespace ShapesApp.Models.CurvedShapes
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF sq = ShapeGraphics.PaddedSquare(b);
+            RectangleF sq = ShapeGraphics.PaddedSquare(b, (float)v[0]);
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
             g.FillEllipse(brush, sq);

@@ -31,7 +31,8 @@ namespace ShapesApp.Models.CurvedShapes
         public void Draw(G g, RectangleF b, double[] v)
         {
             ShapeGraphics.EnableAntiAlias(g);
-            RectangleF r = ShapeGraphics.PaddedRect(b, (float)v[0] * 2, (float)v[1] * 2);
+            float maxDim = (float)Math.Max(v[0], v[1]) * 2;
+            RectangleF r = ShapeGraphics.PaddedRect(b, (float)v[0] * 2, (float)v[1] * 2, maxDim);
             using var brush = ShapeGraphics.CreateFillBrush();
             using var pen   = ShapeGraphics.CreateBorderPen();
             g.FillEllipse(brush, r);

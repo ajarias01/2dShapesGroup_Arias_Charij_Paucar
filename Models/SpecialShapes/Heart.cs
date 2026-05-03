@@ -29,7 +29,10 @@ namespace ShapesApp.Models.SpecialShapes
         {
             ShapeGraphics.EnableAntiAlias(g);
             float sq    = Math.Min(b.Width, b.Height) - 24;
-            float scale = sq / 200f;   // our heart is defined in a 200×180 logical box
+
+            float inputScale = Math.Clamp((float)v[0] / 100f, 0.1f, 1f);
+
+            float scale = (sq / 200f) * inputScale;   // our heart is defined in a 200×180 logical box
             float cx    = b.X + b.Width  / 2f;
             float cy    = b.Y + b.Height / 2f;
 
